@@ -31,12 +31,12 @@ export default async function CollectionPage({ params, searchParams }: Props) {
   });
 
   return (
-    <div className="mx-auto max-w-7xl px-4 py-10">
+    <div className="mx-auto max-w-7xl px-4 py-6 sm:py-10">
       <p className="text-xs font-semibold uppercase tracking-widest text-brand-2">Collection</p>
-      <h1 className="mt-1 font-display text-4xl font-bold uppercase tracking-wide md:text-5xl">{cat.label}</h1>
+      <h1 className="mt-1 font-display text-3xl font-bold uppercase tracking-wide sm:text-4xl md:text-5xl">{cat.label}</h1>
       <p className="mt-2 text-muted">{cat.blurb}</p>
 
-      <div className="mt-8">
+      <div className="mt-6 sm:mt-8">
         <Suspense>
           <CollectionControls total={products.length} />
         </Suspense>
@@ -45,7 +45,7 @@ export default async function CollectionPage({ params, searchParams }: Props) {
       {products.length === 0 ? (
         <div className="py-24 text-center text-muted">No products match these filters.</div>
       ) : (
-        <div className="mt-6 grid grid-cols-2 gap-4 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5">
+        <div className="mt-6 grid grid-cols-2 gap-3 sm:grid-cols-3 sm:gap-4 lg:grid-cols-4 xl:grid-cols-5">
           {products.map((p) => (
             <ProductCard key={p.id} product={p} />
           ))}

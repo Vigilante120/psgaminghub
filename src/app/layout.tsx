@@ -1,4 +1,4 @@
-import type { Metadata } from "next";
+import type { Metadata, Viewport } from "next";
 import { Chakra_Petch, Inter } from "next/font/google";
 import "./globals.css";
 import { CartProvider } from "@/components/CartContext";
@@ -21,6 +21,14 @@ export const metadata: Metadata = {
   title: { default: "PS GAMING HUB — PS5 & PS4 Games at the Best Price", template: "%s · PS GAMING HUB" },
   description:
     "Buy PS5 and PS4 games at the best prices in India, in Primary or Secondary slots. Pay by UPI, fast delivery.",
+};
+
+// Next.js also adds width=device-width by default; viewportFit lets env(safe-area-inset-*) work on notched phones.
+export const viewport: Viewport = {
+  width: "device-width",
+  initialScale: 1,
+  viewportFit: "cover",
+  themeColor: "#05060a",
 };
 
 export default async function RootLayout({ children }: { children: React.ReactNode }) {

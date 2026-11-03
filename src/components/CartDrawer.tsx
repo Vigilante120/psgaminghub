@@ -10,27 +10,35 @@ export default function CartDrawer() {
   const { items, open, setOpen, remove, subtotal, discount, discountPercent, total, count } = useCart();
 
   useEffect(() => {
+    if (!open) return;
     const onKey = (e: KeyboardEvent) => e.key === "Escape" && setOpen(false);
     window.addEventListener("keydown", onKey);
-    return () => window.removeEventListener("keydown", onKey);
-  }, [setOpen]);
+    // Stop the page scrolling behind the drawer
+    const overflow = document.body.style.overflow;
+    document.body.style.overflow = "hidden";
+    return () => {
+      window.removeEventListener("keydown", onKey);
+      document.body.style.overflow = overflow;
+    };
+  }, [open, setOpen]);
 
   const nextTier = [...BUNDLE_OFFER.tiers].reverse().find((t) => count < t.minItems);
 
   return (
-    <div className={`fixed inset-0 z-50 ${open ? "" : "pointer-events-none"}`} aria-hidden={!open}>
+    <div className={`fixed inset-0 z-50 overflow-hidden ${open ? "" : "pointer-events-none"}`} aria-hidden={!open}>
       <div
         className={`absolute inset-0 bg-black/60 backdrop-blur-sm transition-opacity ${open ? "opacity-100" : "opacity-0"}`}
         onClick={() => setOpen(false)}
       />
       <aside
-        className={`absolute right-0 top-0 flex h-full w-full max-w-md flex-col border-l border-line bg-panel transition-transform duration-300 ${
+        className={`absolute right-0 top-0 flex h-dvh w-full max-w-md flex-col border-l border-line bg-panel transition-transform duration-300 ${
           open ? "translate-x-0" : "translate-x-full"
         }`}
+        inert={!open}
       >
-        <div className="flex items-center justify-between border-b border-line px-5 py-4">
+        <div className="flex shrink-0 items-center justify-between border-b border-line px-4 py-3 sm:px-5 sm:py-4">
           <h2 className="font-display text-lg font-bold uppercase tracking-wider">Your cart ({count})</h2>
-          <button onClick={() => setOpen(false)} className="grid h-9 w-9 place-items-center rounded-lg border border-line" aria-label="Close cart">
+          <button onClick={() => setOpen(false)} className="grid h-11 w-11 place-items-center rounded-lg border border-line lg:h-9 lg:w-9" aria-label="Close cart">
             <svg viewBox="0 0 24 24" className="h-4 w-4" fill="none" stroke="currentColor" strokeWidth="2">
               <path d="M6 6l12 12M18 6 6 18" />
             </svg>
@@ -47,12 +55,12 @@ export default function CartDrawer() {
         ) : (
           <>
             {nextTier && (
-              <div className="mx-5 mt-4 rounded-xl border border-brand/30 bg-brand/10 px-4 py-3 text-sm">
+              <div className="mx-4 mt-4 rounded-xl sm:mx-5 border border-brand/30 bg-brand/10 px-4 py-3 text-sm">
                 Add {nextTier.minItems - count} more {nextTier.minItems - count === 1 ? "game" : "games"} to get{" "}
                 <b className="text-brand-2">{nextTier.percent}% off</b> your order.
               </div>
             )}
-            <ul className="flex-1 space-y-3 overflow-y-auto p-5">
+            <ul className="flex-1 space-y-3 overflow-y-auto overscroll-contain p-4 sm:p-5">
               {items.map((i) => (
                 <li key={i.productId + i.platform + i.slot} className="flex gap-3 rounded-xl border border-line bg-panel-2 p-3">
                   <div className="relative h-20 w-16 shrink-0 overflow-hidden rounded-lg">
@@ -67,7 +75,7 @@ export default function CartDrawer() {
                     </span>
                     <div className="mt-auto flex items-center justify-between">
                       <span className="font-display font-bold">{inr(i.price)}</span>
-                      <button onClick={() => remove(i)} className="text-xs text-muted hover:text-hot">
+                      <button onClick={() => remove(i)} className="-my-2 -mr-2 min-h-11 px-2 text-xs text-muted hover:text-hot lg:min-h-0">
                         Remove
                       </button>
                     </div>
@@ -75,7 +83,7 @@ export default function CartDrawer() {
                 </li>
               ))}
             </ul>
-            <div className="space-y-2 border-t border-line p-5 text-sm">
+            <div className="shrink-0 space-y-2 border-t border-line p-4 pb-[max(1rem,env(safe-area-inset-bottom))] text-sm sm:p-5">
               <div className="flex justify-between text-muted">
                 <span>Subtotal</span>
                 <span>{inr(subtotal)}</span>

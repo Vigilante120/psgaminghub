@@ -93,7 +93,7 @@ export default function PaymentPanel({
 
   return (
     <div className="overflow-hidden rounded-2xl border border-brand/40 bg-panel">
-      <div className="border-b border-line bg-brand/10 px-6 py-4">
+      <div className="border-b border-line bg-brand/10 px-4 py-4 sm:px-6">
         <h2 className="font-display text-lg font-bold uppercase tracking-wide">
           {resubmit ? "Submit your payment again" : "Pay with UPI"}
         </h2>
@@ -102,16 +102,16 @@ export default function PaymentPanel({
         </p>
       </div>
 
-      <div className="grid gap-8 p-6 md:grid-cols-[auto_1fr]">
+      <div className="grid gap-6 p-4 sm:gap-8 sm:p-6 md:grid-cols-[auto_1fr]">
         <div className="flex flex-col items-center gap-3">
           <div className="rounded-2xl bg-white p-3">
             <QRCodeSVG value={link} size={176} level="M" />
           </div>
-          <p className="text-xs text-muted">Scan with GPay, PhonePe, Paytm or BHIM</p>
+          <p className="text-center text-xs text-muted">Scan with GPay, PhonePe, Paytm or BHIM</p>
           <a href={link} className="btn btn-primary w-full md:hidden">
             Pay {inr(amount)} with UPI app
           </a>
-          <button type="button" onClick={copy} className="text-xs text-brand-2 hover:underline">
+          <button type="button" onClick={copy} className="min-h-11 break-all px-2 text-xs text-brand-2 hover:underline lg:min-h-0">
             {copied ? "Copied!" : `UPI ID: ${upiId} (copy)`}
           </button>
         </div>
@@ -140,7 +140,7 @@ export default function PaymentPanel({
               type="file"
               accept="image/*"
               onChange={(e) => setFile(e.target.files?.[0] ?? null)}
-              className="block w-full text-sm text-muted file:mr-3 file:rounded-lg file:border-0 file:bg-brand/20 file:px-4 file:py-2 file:text-sm file:font-semibold file:text-brand-2 hover:file:bg-brand/30"
+              className="block w-full text-sm text-muted file:mr-3 file:rounded-lg file:border-0 file:bg-brand/20 file:px-4 file:py-2.5 file:text-sm file:font-semibold file:text-brand-2 hover:file:bg-brand/30"
               required
             />
           </div>
@@ -167,7 +167,7 @@ export default function PaymentPanel({
                 />
               </div>
             </div>
-            <ul className="space-y-1 rounded-xl border border-line bg-panel-2 p-3 font-mono text-sm">
+            <ul className="space-y-1 break-words rounded-xl border border-line bg-panel-2 p-3 font-mono text-xs sm:text-sm">
               {items.map((i, n) => (
                 <li key={n}>{deliveryLine(i, name || "Name", phone || "Phone number")}</li>
               ))}

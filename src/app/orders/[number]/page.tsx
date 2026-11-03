@@ -29,11 +29,11 @@ export default async function OrderPage({ params }: { params: Promise<{ number: 
   const canPay = order.status === "awaiting_payment" || order.status === "rejected";
 
   return (
-    <div className="mx-auto max-w-5xl px-4 py-10">
-      <Link href="/orders" className="text-sm text-muted hover:text-white">← My orders</Link>
+    <div className="mx-auto max-w-5xl px-4 py-6 sm:py-10">
+      <Link href="/orders" className="-my-2 inline-flex min-h-11 items-center text-sm text-muted hover:text-white">← My orders</Link>
 
-      <div className="mt-4 flex flex-wrap items-center gap-4">
-        <h1 className="font-display text-4xl font-bold uppercase tracking-wide">{order.order_number}</h1>
+      <div className="mt-2 flex flex-wrap items-center gap-3 sm:mt-4 sm:gap-4">
+        <h1 className="font-display text-3xl font-bold uppercase tracking-wide sm:text-4xl">{order.order_number}</h1>
         <StatusBadge status={order.status} />
       </div>
       <p className="mt-2 text-muted">{STATUS_META[order.status].help}</p>
@@ -41,7 +41,7 @@ export default async function OrderPage({ params }: { params: Promise<{ number: 
         <p className="mt-3 rounded-xl border border-hot/30 bg-hot/10 px-4 py-3 text-sm text-hot">Note from us: {order.admin_note}</p>
       )}
 
-      <div className="mt-8 rounded-2xl border border-line bg-panel p-6">
+      <div className="mt-6 rounded-2xl border border-line bg-panel p-4 sm:mt-8 sm:p-6">
         <OrderTimeline order={order} />
       </div>
 
@@ -61,17 +61,17 @@ export default async function OrderPage({ params }: { params: Promise<{ number: 
           )}
 
           {order.status === "payment_submitted" && (
-            <div className="rounded-2xl border border-sky-400/30 bg-sky-400/5 p-6">
+            <div className="rounded-2xl border border-sky-400/30 bg-sky-400/5 p-4 sm:p-6">
               <h2 className="font-display text-lg font-bold uppercase tracking-wide">Payment received for checking</h2>
               <p className="mt-2 text-sm text-muted">
-                UTR <span className="font-mono text-white">{order.utr}</span> was submitted on {formatDate(order.payment_submitted_at)}. We'll
+                UTR <span className="break-all font-mono text-white">{order.utr}</span> was submitted on {formatDate(order.payment_submitted_at)}. We'll
                 verify it and message you on WhatsApp at {order.delivery_phone ?? order.whatsapp}.
               </p>
             </div>
           )}
 
           {order.status === "processing" && (
-            <div className="rounded-2xl border border-violet-400/30 bg-violet-400/5 p-6">
+            <div className="rounded-2xl border border-violet-400/30 bg-violet-400/5 p-4 sm:p-6">
               <h2 className="font-display text-lg font-bold uppercase tracking-wide">Payment verified 🎉</h2>
               <p className="mt-2 text-sm text-muted">
                 Keep WhatsApp handy. We'll message you at {order.delivery_phone ?? order.whatsapp} to complete delivery.
@@ -80,7 +80,7 @@ export default async function OrderPage({ params }: { params: Promise<{ number: 
           )}
 
           {order.status === "delivered" && (
-            <div className="rounded-2xl border border-emerald-400/30 bg-emerald-400/5 p-6">
+            <div className="rounded-2xl border border-emerald-400/30 bg-emerald-400/5 p-4 sm:p-6">
               <h2 className="font-display text-lg font-bold uppercase tracking-wide">Delivered — enjoy your game!</h2>
               <p className="mt-2 text-sm text-muted">Delivered on {formatDate(order.delivered_at)}.</p>
               {receiptUrl ? (
@@ -105,7 +105,7 @@ export default async function OrderPage({ params }: { params: Promise<{ number: 
           )}
         </div>
 
-        <aside className="h-fit space-y-5 rounded-2xl border border-line bg-panel p-6">
+        <aside className="h-fit space-y-5 rounded-2xl border border-line bg-panel p-4 sm:p-6">
           <div>
             <h2 className="font-display text-sm font-bold uppercase tracking-wider text-muted">Items</h2>
             <ul className="mt-3 space-y-2">

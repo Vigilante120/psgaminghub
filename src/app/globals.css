@@ -16,6 +16,7 @@
 
 html {
   color-scheme: dark;
+  -webkit-text-size-adjust: 100%;
 }
 
 body {
@@ -40,64 +41,80 @@ body {
   color: transparent;
 }
 
-.btn {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  gap: 0.5rem;
-  border-radius: 0.75rem;
-  padding: 0.7rem 1.25rem;
-  font-family: var(--font-display);
-  font-weight: 600;
-  letter-spacing: 0.04em;
-  text-transform: uppercase;
-  font-size: 0.875rem;
-  transition: transform 0.15s, background 0.15s, box-shadow 0.15s, opacity 0.15s;
-}
-.btn:active {
-  transform: translateY(1px);
-}
-.btn:disabled {
-  opacity: 0.5;
-  cursor: not-allowed;
-}
-.btn-primary {
-  background: var(--color-brand);
-  color: white;
-  box-shadow: 0 8px 30px -10px rgb(47 107 255 / 0.8);
-}
-.btn-primary:hover {
-  background: #4a7fff;
-}
-.btn-ghost {
-  border: 1px solid var(--color-line);
-  background: rgb(255 255 255 / 0.02);
-}
-.btn-ghost:hover {
-  border-color: #33405f;
-  background: rgb(255 255 255 / 0.05);
-}
+/* In the components layer so Tailwind utilities (hidden, px-3, text-xs…) can override these. */
+@layer components {
+  .btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+    border-radius: 0.75rem;
+    padding: 0.7rem 1.25rem;
+    font-family: var(--font-display);
+    font-weight: 600;
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+    font-size: 0.875rem;
+    transition: transform 0.15s, background 0.15s, box-shadow 0.15s, opacity 0.15s;
+  }
+  .btn:active {
+    transform: translateY(1px);
+  }
+  .btn:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+  }
+  .btn-primary {
+    background: var(--color-brand);
+    color: white;
+    box-shadow: 0 8px 30px -10px rgb(47 107 255 / 0.8);
+  }
+  .btn-primary:hover {
+    background: #4a7fff;
+  }
+  .btn-ghost {
+    border: 1px solid var(--color-line);
+    background: rgb(255 255 255 / 0.02);
+  }
+  .btn-ghost:hover {
+    border-color: #33405f;
+    background: rgb(255 255 255 / 0.05);
+  }
 
-.input {
-  width: 100%;
-  border-radius: 0.75rem;
-  border: 1px solid var(--color-line);
-  background: var(--color-panel);
-  padding: 0.7rem 0.9rem;
-  font-size: 0.95rem;
-  outline: none;
-  transition: border-color 0.15s, box-shadow 0.15s;
-}
-.input:focus {
-  border-color: var(--color-brand);
-  box-shadow: 0 0 0 3px rgb(47 107 255 / 0.25);
-}
-.label {
-  display: block;
-  margin-bottom: 0.4rem;
-  font-size: 0.8rem;
-  font-weight: 500;
-  color: var(--color-muted);
+  .input {
+    width: 100%;
+    border-radius: 0.75rem;
+    border: 1px solid var(--color-line);
+    background: var(--color-panel);
+    padding: 0.7rem 0.9rem;
+    /* 16px on phones so iOS Safari doesn't zoom in on focus */
+    font-size: 1rem;
+    outline: none;
+    transition: border-color 0.15s, box-shadow 0.15s;
+  }
+  .input:focus {
+    border-color: var(--color-brand);
+    box-shadow: 0 0 0 3px rgb(47 107 255 / 0.25);
+  }
+  .label {
+    display: block;
+    margin-bottom: 0.4rem;
+    font-size: 0.8rem;
+    font-weight: 500;
+    color: var(--color-muted);
+  }
+
+  @media (min-width: 640px) {
+    .input {
+      font-size: 0.95rem;
+    }
+  }
+  /* Comfortable 44px tap targets on phones and tablets */
+  @media (max-width: 1023px) {
+    .btn {
+      min-height: 2.75rem;
+    }
+  }
 }
 
 @keyframes marquee {
@@ -122,4 +139,14 @@ body {
 }
 .no-scrollbar {
   scrollbar-width: none;
+}
+
+/* Touch screens (phones and tablets): never below 16px in form fields, or iOS Safari zooms in on focus.
+   Unlayered on purpose so it wins over text-sm utilities. */
+@media (pointer: coarse) {
+  input,
+  select,
+  textarea {
+    font-size: max(16px, 1em);
+  }
 }

@@ -47,7 +47,7 @@ export default function CheckoutForm({ email, defaults }: { email: string; defau
 
   if (items.length === 0) {
     return (
-      <div className="mt-10 rounded-2xl border border-line bg-panel p-10 text-center">
+      <div className="mt-10 rounded-2xl border border-line bg-panel p-6 text-center sm:p-10">
         <p className="text-muted">Your cart is empty.</p>
         <Link href="/collections/all" className="btn btn-primary mt-5">Browse games</Link>
       </div>
@@ -55,9 +55,9 @@ export default function CheckoutForm({ email, defaults }: { email: string; defau
   }
 
   return (
-    <form onSubmit={placeOrder} className="mt-8 grid gap-8 lg:grid-cols-[1fr_400px]">
+    <form onSubmit={placeOrder} className="mt-6 grid gap-6 sm:mt-8 sm:gap-8 lg:grid-cols-[1fr_400px]">
       <div className="space-y-6">
-        <section className="rounded-2xl border border-line bg-panel p-6">
+        <section className="rounded-2xl border border-line bg-panel p-4 sm:p-6">
           <h2 className="font-display text-lg font-bold uppercase tracking-wide">Your details</h2>
           <div className="mt-5 grid gap-4 sm:grid-cols-2">
             <div>
@@ -84,7 +84,7 @@ export default function CheckoutForm({ email, defaults }: { email: string; defau
           </div>
         </section>
 
-        <section className="rounded-2xl border border-line bg-panel p-6">
+        <section className="rounded-2xl border border-line bg-panel p-4 sm:p-6">
           <h2 className="font-display text-lg font-bold uppercase tracking-wide">Notes (optional)</h2>
           <textarea id="notes" rows={2} className="input mt-4" value={form.notes} onChange={set("notes")} placeholder="Best time to reach you, etc." />
           <p className="mt-3 text-xs text-muted">
@@ -93,7 +93,7 @@ export default function CheckoutForm({ email, defaults }: { email: string; defau
         </section>
       </div>
 
-      <aside className="h-fit rounded-2xl border border-line bg-panel p-6 lg:sticky lg:top-24">
+      <aside className="h-fit rounded-2xl border border-line bg-panel p-4 sm:p-6 lg:sticky lg:top-24">
         <h2 className="font-display text-lg font-bold uppercase tracking-wide">Order summary</h2>
         <ul className="mt-4 space-y-3">
           {items.map((i) => (
@@ -105,7 +105,7 @@ export default function CheckoutForm({ email, defaults }: { email: string; defau
                 <p className="truncate text-sm font-semibold">{i.title}</p>
                 <p className="text-xs text-muted">{i.platform} · {i.slot}</p>
               </div>
-              <span className="text-sm font-semibold">{inr(i.price)}</span>
+              <span className="shrink-0 text-sm font-semibold">{inr(i.price)}</span>
             </li>
           ))}
         </ul>

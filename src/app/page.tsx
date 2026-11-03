@@ -49,15 +49,15 @@ export default async function Home() {
         <div className="absolute -left-40 -top-40 h-[32rem] w-[32rem] rounded-full bg-brand/30 blur-[120px]" />
         <div className="absolute -right-32 top-20 h-96 w-96 rounded-full bg-[#8b5cf6]/25 blur-[120px]" />
 
-        <div className="relative mx-auto grid max-w-7xl items-center gap-12 px-4 py-16 md:py-24 lg:grid-cols-[1.1fr_1fr]">
+        <div className="relative mx-auto grid max-w-7xl items-center gap-12 px-4 py-12 sm:py-16 md:py-24 lg:grid-cols-[1.1fr_1fr]">
           <div>
             <span className="inline-flex items-center gap-2 rounded-full border border-brand/40 bg-brand/10 px-3 py-1 text-xs font-semibold uppercase tracking-widest text-brand-2">
               <span className="h-1.5 w-1.5 animate-pulse rounded-full bg-brand-2" /> PS5 · PS4
             </span>
-            <h1 className="mt-5 font-display text-5xl font-bold uppercase leading-[0.95] tracking-tight md:text-7xl">
+            <h1 className="mt-5 font-display text-4xl font-bold uppercase leading-[0.95] tracking-tight min-[400px]:text-5xl md:text-7xl">
               Level up your <span className="text-gradient">library</span> for less.
             </h1>
-            <p className="mt-6 max-w-lg text-lg leading-relaxed text-muted">
+            <p className="mt-5 max-w-lg text-base leading-relaxed text-muted sm:mt-6 sm:text-lg">
               The latest PS5 and PS4 games at the best prices in India. Pick a Primary or Secondary slot, pay with UPI,
               and we deliver it fast.
             </p>
@@ -103,7 +103,7 @@ export default async function Home() {
       </section>
 
       {/* Slots */}
-      <section id="slots" className="mx-auto mt-16 max-w-7xl scroll-mt-24 px-4">
+      <section id="slots" className="mx-auto mt-12 max-w-7xl sm:mt-16 scroll-mt-24 px-4">
         <h2 className="font-display text-2xl font-bold uppercase tracking-wide md:text-3xl">Primary or Secondary?</h2>
         <p className="mt-2 max-w-2xl text-muted">Every game comes in two slot types. Pick the one that suits how you play.</p>
         <div className="mt-6">
@@ -115,7 +115,7 @@ export default async function Home() {
       <ProductRow title="PS4 games" href="/collections/playstation-games?platform=PS4" products={ps4Games} />
 
       {/* How it works */}
-      <section id="how-it-works" className="mx-auto mt-24 max-w-7xl scroll-mt-24 px-4">
+      <section id="how-it-works" className="mx-auto mt-16 max-w-7xl sm:mt-24 scroll-mt-24 px-4">
         <h2 className="font-display text-2xl font-bold uppercase tracking-wide md:text-3xl">How delivery works</h2>
         <p className="mt-2 max-w-2xl text-muted">Four simple steps from checkout to playing.</p>
         <div className="mt-6">
@@ -124,16 +124,16 @@ export default async function Home() {
       </section>
 
       {/* FAQ */}
-      <section id="faq" className="mx-auto mt-24 max-w-3xl scroll-mt-24 px-4">
+      <section id="faq" className="mx-auto mt-16 max-w-3xl sm:mt-24 scroll-mt-24 px-4">
         <h2 className="text-center font-display text-2xl font-bold uppercase tracking-wide md:text-3xl">FAQ</h2>
         <div className="mt-6 divide-y divide-line rounded-2xl border border-line bg-panel">
           {FAQ.map((f) => (
-            <details key={f.q} className="group px-5 py-4">
-              <summary className="flex cursor-pointer list-none items-center justify-between font-semibold">
+            <details key={f.q} className="group px-4 py-2 sm:px-5 sm:py-3">
+              <summary className="flex min-h-11 cursor-pointer list-none items-center justify-between gap-4 py-1 font-semibold">
                 {f.q}
-                <span className="text-brand-2 transition group-open:rotate-45">+</span>
+                <span className="shrink-0 text-xl leading-none text-brand-2 transition group-open:rotate-45">+</span>
               </summary>
-              <p className="mt-3 text-sm leading-relaxed text-muted">{f.a}</p>
+              <p className="mt-2 pb-2 text-sm leading-relaxed text-muted">{f.a}</p>
             </details>
           ))}
         </div>

@@ -6,7 +6,7 @@ export default function ProductForm({ product }: { product?: Product }) {
   const p = product;
   return (
     <div className="max-w-3xl">
-      <form action={saveProduct} className="space-y-5 rounded-2xl border border-line bg-panel p-6">
+      <form action={saveProduct} className="space-y-5 rounded-2xl border border-line bg-panel p-4 sm:p-6">
         {p && <input type="hidden" name="id" value={p.id} />}
 
         <div className="grid gap-4 sm:grid-cols-2">
@@ -16,7 +16,7 @@ export default function ProductForm({ product }: { product?: Product }) {
           </div>
           <div>
             <label className="label" htmlFor="slug">URL slug (auto if empty)</label>
-            <input id="slug" name="slug" defaultValue={p?.slug} className="input font-mono text-sm" placeholder="spider-man-2" />
+            <input id="slug" name="slug" defaultValue={p?.slug} className="input font-mono sm:text-sm" placeholder="spider-man-2" />
           </div>
           <div>
             <label className="label" htmlFor="category">Category</label>
@@ -52,10 +52,10 @@ export default function ProductForm({ product }: { product?: Product }) {
 
         <fieldset>
           <legend className="label">Platforms</legend>
-          <div className="flex gap-4">
+          <div className="flex flex-wrap gap-x-4">
             {CONSOLES.map((pl) => (
-              <label key={pl} className="flex items-center gap-2 text-sm">
-                <input type="checkbox" name="platforms" value={pl} defaultChecked={p ? p.platforms.includes(pl) : pl === "PS5"} />
+              <label key={pl} className="flex min-h-11 items-center gap-2 text-sm lg:min-h-0">
+                <input type="checkbox" className="h-5 w-5 accent-brand lg:h-4 lg:w-4" name="platforms" value={pl} defaultChecked={p ? p.platforms.includes(pl) : pl === "PS5"} />
                 {pl}
               </label>
             ))}
@@ -74,27 +74,27 @@ export default function ProductForm({ product }: { product?: Product }) {
             name="image"
             type="file"
             accept="image/*"
-            className="block w-full text-sm text-muted file:mr-3 file:rounded-lg file:border-0 file:bg-brand/20 file:px-4 file:py-2 file:text-sm file:font-semibold file:text-brand-2"
+            className="block w-full text-sm text-muted file:mr-3 file:rounded-lg file:border-0 file:bg-brand/20 file:px-4 file:py-2.5 file:text-sm file:font-semibold file:text-brand-2"
           />
           {p?.cover_url && <p className="mt-1.5 text-xs text-muted">Leave empty to keep the current image.</p>}
         </div>
 
-        <div className="flex gap-6">
-          <label className="flex items-center gap-2 text-sm">
-            <input type="checkbox" name="is_active" defaultChecked={p ? p.is_active : true} /> Live on store
+        <div className="flex flex-wrap gap-x-6">
+          <label className="flex min-h-11 items-center gap-2 text-sm lg:min-h-0">
+            <input type="checkbox" className="h-5 w-5 accent-brand lg:h-4 lg:w-4" name="is_active" defaultChecked={p ? p.is_active : true} /> Live on store
           </label>
-          <label className="flex items-center gap-2 text-sm">
-            <input type="checkbox" name="is_featured" defaultChecked={p?.is_featured} /> Featured on homepage
+          <label className="flex min-h-11 items-center gap-2 text-sm lg:min-h-0">
+            <input type="checkbox" className="h-5 w-5 accent-brand lg:h-4 lg:w-4" name="is_featured" defaultChecked={p?.is_featured} /> Featured on homepage
           </label>
         </div>
 
-        <button className="btn btn-primary">{p ? "Save changes" : "Create product"}</button>
+        <button className="btn btn-primary w-full sm:w-auto">{p ? "Save changes" : "Create product"}</button>
       </form>
 
       {p && (
         <form action={deleteProduct} className="mt-4">
           <input type="hidden" name="id" value={p.id} />
-          <button className="text-sm text-hot hover:underline">Delete product permanently</button>
+          <button className="min-h-11 text-sm text-hot hover:underline lg:min-h-0">Delete product permanently</button>
           <p className="text-xs text-muted">Tip: untick “Live on store” to hide it instead. Past orders keep their item names either way.</p>
         </form>
       )}

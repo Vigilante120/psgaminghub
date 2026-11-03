@@ -35,18 +35,18 @@ export default async function ProductPage({ params }: Props) {
 
   return (
     <>
-      <div className="mx-auto max-w-7xl px-4 py-10">
-        <nav className="mb-6 text-xs text-muted">
-          <Link href="/" className="hover:text-white">Home</Link> /{" "}
-          <Link href={`/collections/${product.category}`} className="hover:text-white">
+      <div className="mx-auto max-w-7xl px-4 py-6 sm:py-10">
+        <nav className="-mt-3 mb-1 break-words text-xs text-muted sm:mt-0 sm:mb-6">
+          <Link href="/" className="inline-flex min-h-11 items-center hover:text-white lg:min-h-0">Home</Link> /{" "}
+          <Link href={`/collections/${product.category}`} className="inline-flex min-h-11 items-center hover:text-white lg:min-h-0">
             {categoryLabel(product.category)}
           </Link>{" "}
           / <span className="text-white">{product.title}</span>
         </nav>
 
-        <div className="grid gap-10 lg:grid-cols-[minmax(0,420px)_1fr]">
-          <div className="relative aspect-[3/4] overflow-hidden rounded-3xl border border-line shadow-2xl shadow-brand/10">
-            <Cover title={product.title} url={product.cover_url} sizes="(max-width: 1024px) 100vw, 420px" priority />
+        <div className="grid gap-6 sm:gap-10 md:grid-cols-[minmax(0,300px)_1fr] lg:grid-cols-[minmax(0,420px)_1fr]">
+          <div className="relative mx-auto aspect-[3/4] w-full max-w-[280px] overflow-hidden rounded-3xl border border-line shadow-2xl shadow-brand/10 md:max-w-none">
+            <Cover title={product.title} url={product.cover_url} sizes="(max-width: 768px) 280px, (max-width: 1024px) 300px, 420px" priority />
           </div>
 
           <div>
@@ -58,21 +58,21 @@ export default async function ProductPage({ params }: Props) {
               ))}
               {off > 0 && <span className="rounded-md bg-hot px-2 py-1 text-xs font-bold">SAVE {off}%</span>}
             </div>
-            <h1 className="mt-4 font-display text-4xl font-bold uppercase leading-tight tracking-wide md:text-5xl">
+            <h1 className="mt-4 break-words font-display text-3xl font-bold uppercase leading-tight tracking-wide sm:text-4xl lg:text-5xl">
               {product.title}
             </h1>
 
-            <div className="mt-5 flex items-end gap-3">
+            <div className="mt-4 flex flex-wrap items-end gap-x-3 gap-y-1 sm:mt-5">
               {product.secondary_price != null && <span className="pb-1.5 text-sm text-muted">from</span>}
-              <span className="font-display text-4xl font-bold">{inr(fromPrice(product))}</span>
+              <span className="font-display text-3xl font-bold sm:text-4xl">{inr(fromPrice(product))}</span>
               {off > 0 && <span className="pb-1 text-lg text-muted line-through">{inr(product.compare_at_price!)}</span>}
             </div>
 
-            <div className="mt-8 max-w-md">
+            <div className="mt-6 max-w-md sm:mt-8">
               <AddToCart product={product} />
             </div>
 
-            <ul className="mt-6 grid max-w-md grid-cols-2 gap-2 text-sm text-muted">
+            <ul className="mt-6 grid max-w-md grid-cols-1 gap-2 text-sm text-muted min-[400px]:grid-cols-2">
               <li>⚡ Fast delivery</li>
               <li>🎮 Primary or Secondary slot</li>
               <li>📲 Pay with any UPI app</li>
@@ -88,12 +88,12 @@ export default async function ProductPage({ params }: Props) {
           </div>
         </div>
 
-        <section className="mt-16">
+        <section className="mt-12 sm:mt-16">
           <h2 className="mb-5 font-display text-2xl font-bold uppercase tracking-wide">Primary or Secondary?</h2>
           <SlotInfo />
         </section>
 
-        <section className="mt-16">
+        <section className="mt-12 sm:mt-16">
           <h2 className="mb-5 font-display text-2xl font-bold uppercase tracking-wide">How you get this game</h2>
           <HowItWorks />
         </section>

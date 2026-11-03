@@ -11,12 +11,38 @@ export default async function AdminProducts() {
 
   return (
     <div>
-      <div className="flex items-center justify-between">
-        <h1 className="font-display text-3xl font-bold uppercase tracking-wide">Products ({products.length})</h1>
+      <div className="flex flex-wrap items-center justify-between gap-3">
+        <h1 className="font-display text-2xl font-bold uppercase tracking-wide sm:text-3xl">Products ({products.length})</h1>
         <Link href="/admin/products/new" className="btn btn-primary">+ Add product</Link>
       </div>
 
-      <div className="mt-6 overflow-x-auto rounded-2xl border border-line">
+      {/* Phones: one row per product */}
+      <ul className="mt-5 divide-y divide-line overflow-hidden rounded-2xl border border-line md:hidden">
+        {products.map((p) => (
+          <li key={p.id}>
+            <Link href={`/admin/products/${p.id}`} className="flex items-center gap-3 bg-panel p-3 active:bg-panel-2">
+              <span className="relative h-16 w-12 shrink-0 overflow-hidden rounded">
+                <Cover title={p.title} url={p.cover_url} sizes="48px" />
+              </span>
+              <span className="min-w-0 flex-1">
+                <span className="block truncate font-semibold">{p.title}</span>
+                <span className="block text-xs text-muted">{p.platforms.join(", ")}</span>
+                <span className="mt-1 block text-xs">
+                  {p.is_active ? <span className="text-emerald-300">Live</span> : <span className="text-muted">Hidden</span>}
+                  {p.is_featured && <span className="ml-2 text-amber-300">★ Featured</span>}
+                </span>
+              </span>
+              <span className="shrink-0 text-right text-sm">
+                <span className="block font-semibold">{inr(Number(p.price))}</span>
+                <span className="block text-xs text-muted">{p.secondary_price != null ? inr(Number(p.secondary_price)) : "—"}</span>
+              </span>
+            </Link>
+          </li>
+        ))}
+      </ul>
+
+      {/* Tablets and up: table */}
+      <div className="mt-6 hidden overflow-x-auto rounded-2xl border border-line md:block">
         <table className="w-full min-w-[700px] text-left text-sm">
           <thead className="bg-panel-2 text-xs uppercase tracking-wider text-muted">
             <tr>

@@ -20,8 +20,8 @@ export default async function CheckoutPage() {
     .maybeSingle();
 
   return (
-    <div className="mx-auto max-w-6xl px-4 py-10">
-      <h1 className="font-display text-4xl font-bold uppercase tracking-wide">Checkout</h1>
+    <div className="mx-auto max-w-6xl px-4 py-6 sm:py-10">
+      <h1 className="font-display text-3xl font-bold uppercase tracking-wide sm:text-4xl">Checkout</h1>
       <p className="mt-2 text-muted">Tell us how to reach you. You'll pay by UPI on the next screen.</p>
       <CheckoutForm
         email={user.email ?? ""}

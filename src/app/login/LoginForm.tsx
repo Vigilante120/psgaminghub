@@ -50,8 +50,8 @@ export default function LoginForm() {
   }
 
   return (
-    <div className="rounded-3xl border border-line bg-panel p-8">
-      <h1 className="font-display text-3xl font-bold uppercase tracking-wide">
+    <div className="rounded-3xl border border-line bg-panel p-5 sm:p-8">
+      <h1 className="font-display text-2xl font-bold uppercase tracking-wide sm:text-3xl">
         {mode === "signin" ? "Welcome back" : "Create account"}
       </h1>
       <p className="mt-2 text-sm text-muted">
@@ -93,7 +93,7 @@ export default function LoginForm() {
 
       <p className="mt-6 text-center text-sm text-muted">
         {mode === "signin" ? "New here?" : "Already have an account?"}{" "}
-        <button onClick={() => setMode(mode === "signin" ? "signup" : "signin")} className="font-semibold text-brand-2 hover:underline">
+        <button onClick={() => setMode(mode === "signin" ? "signup" : "signin")} className="inline-flex min-h-11 items-center font-semibold text-brand-2 hover:underline lg:min-h-0">
           {mode === "signin" ? "Create an account" : "Sign in"}
         </button>
       </p>

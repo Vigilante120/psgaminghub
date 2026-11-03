@@ -30,13 +30,13 @@ export default function ProductCard({ product }: { product: Product }) {
         </div>
       </Link>
 
-      <div className="flex flex-1 flex-col p-4">
+      <div className="flex flex-1 flex-col p-3 sm:p-4">
         <Link href={`/products/${product.slug}`} className="line-clamp-2 min-h-[2.75rem] text-sm font-semibold leading-snug hover:text-brand-2">
           {product.title}
         </Link>
-        <div className="mt-3 flex items-end justify-between gap-2">
+        <div className="mt-3 flex items-end justify-between gap-1.5 sm:gap-2">
           <div>
-            <div className="font-display text-lg font-bold">
+            <div className="font-display text-base font-bold sm:text-lg">
               {product.secondary_price != null && <span className="mr-1 text-xs font-normal text-muted">from</span>}
               {inr(fromPrice(product))}
             </div>

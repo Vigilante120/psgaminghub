@@ -38,28 +38,28 @@ export default async function AdminOrder({ params }: { params: Promise<{ id: str
 
   return (
     <div>
-      <Link href="/admin" className="text-sm text-muted hover:text-white">← All orders</Link>
-      <div className="mt-3 flex flex-wrap items-center gap-4">
-        <h1 className="font-display text-3xl font-bold uppercase tracking-wide">{order.order_number}</h1>
+      <Link href="/admin" className="-my-2 inline-flex min-h-11 items-center text-sm text-muted hover:text-white">← All orders</Link>
+      <div className="mt-2 flex flex-wrap items-center gap-3 sm:mt-3 sm:gap-4">
+        <h1 className="font-display text-2xl font-bold uppercase tracking-wide sm:text-3xl">{order.order_number}</h1>
         <StatusBadge status={order.status} />
-        <span className="ml-auto font-display text-2xl font-bold">{inr(Number(order.total))}</span>
+        <span className="ml-auto font-display text-xl font-bold sm:text-2xl">{inr(Number(order.total))}</span>
       </div>
 
-      <div className="mt-6 rounded-2xl border border-line bg-panel p-6">
+      <div className="mt-6 rounded-2xl border border-line bg-panel p-4 sm:p-6">
         <OrderTimeline order={order} />
       </div>
 
       <div className="mt-6 grid gap-6 lg:grid-cols-[1fr_380px]">
         <div className="space-y-6">
           {/* Payment proof */}
-          <section className="rounded-2xl border border-line bg-panel p-6">
+          <section className="rounded-2xl border border-line bg-panel p-4 sm:p-6">
             <h2 className="font-display text-lg font-bold uppercase tracking-wide">1 · Payment proof</h2>
             {order.utr ? (
               <>
                 <div className="mt-4 grid gap-4 sm:grid-cols-2">
                   <div>
                     <p className="label">UTR / transaction ID</p>
-                    <p className="font-mono text-lg tracking-wider">{order.utr}</p>
+                    <p className="break-all font-mono text-lg tracking-wider">{order.utr}</p>
                     <p className="mt-3 label">Amount to match</p>
                     <p className="font-display text-xl font-bold">{inr(Number(order.total))}</p>
                     <p className="mt-3 text-xs text-muted">Submitted {formatDate(order.payment_submitted_at)}</p>
@@ -76,13 +76,13 @@ export default async function AdminOrder({ params }: { params: Promise<{ id: str
                 </div>
                 {order.status === "payment_submitted" && (
                   <div className="mt-5 flex flex-wrap items-end gap-3 border-t border-line pt-5">
-                    <form action={verifyPayment}>
+                    <form action={verifyPayment} className="w-full sm:w-auto">
                       <input type="hidden" name="orderId" value={order.id} />
-                      <button className="btn btn-primary">✓ Payment received — verify</button>
+                      <button className="btn btn-primary w-full sm:w-auto">✓ Payment received — verify</button>
                     </form>
-                    <form action={rejectPayment} className="flex flex-1 gap-2">
+                    <form action={rejectPayment} className="flex w-full gap-2 sm:w-auto sm:flex-1">
                       <input type="hidden" name="orderId" value={order.id} />
-                      <input name="note" placeholder="Reason (shown to customer)" className="input h-11 py-0 text-sm" />
+                      <input name="note" placeholder="Reason (shown to customer)" className="input h-11 min-w-0 py-0 sm:text-sm" />
                       <button className="btn btn-ghost shrink-0 text-hot">Reject</button>
                     </form>
                   </div>
@@ -94,9 +94,9 @@ export default async function AdminOrder({ params }: { params: Promise<{ id: str
           </section>
 
           {/* Fulfilment */}
-          <section className="rounded-2xl border border-line bg-panel p-6">
+          <section className="rounded-2xl border border-line bg-panel p-4 sm:p-6">
             <h2 className="font-display text-lg font-bold uppercase tracking-wide">2 · Deliver</h2>
-            <div className="mt-4 flex flex-wrap gap-2">
+            <div className="mt-4 grid gap-2 sm:flex sm:flex-wrap">
               <a href={whatsappLink(phone, waMessages.verified)} target="_blank" rel="noreferrer" className="btn btn-ghost text-xs">
                 WhatsApp: ready for QR step
               </a>
@@ -120,25 +120,25 @@ export default async function AdminOrder({ params }: { params: Promise<{ id: str
                   type="file"
                   accept="image/*,application/pdf"
                   required={!order.receipt_path}
-                  className="block w-full text-sm text-muted file:mr-3 file:rounded-lg file:border-0 file:bg-brand/20 file:px-4 file:py-2 file:text-sm file:font-semibold file:text-brand-2"
+                  className="block w-full text-sm text-muted file:mr-3 file:rounded-lg file:border-0 file:bg-brand/20 file:px-4 file:py-2.5 file:text-sm file:font-semibold file:text-brand-2"
                 />
-                <button className="btn btn-primary">{order.status === "delivered" ? "Update receipt" : "Upload receipt & mark delivered"}</button>
+                <button className="btn btn-primary w-full sm:w-auto">{order.status === "delivered" ? "Update receipt" : "Upload receipt & mark delivered"}</button>
               </form>
             )}
             {receiptUrl && (
-              <a href={receiptUrl} target="_blank" rel="noreferrer" className="mt-4 inline-block text-sm text-brand-2 hover:underline">
+              <a href={receiptUrl} target="_blank" rel="noreferrer" className="mt-2 inline-flex min-h-11 items-center text-sm text-brand-2 hover:underline sm:mt-4 lg:min-h-0">
                 View current receipt ↗
               </a>
             )}
           </section>
         </div>
 
-        <aside className="h-fit space-y-5 rounded-2xl border border-line bg-panel p-6 text-sm">
+        <aside className="h-fit space-y-5 rounded-2xl border border-line bg-panel p-4 sm:p-6 text-sm">
           <div>
             <h2 className="font-display text-sm font-bold uppercase tracking-wider text-muted">Customer</h2>
             <p className="mt-2 font-semibold">{order.customer_name}</p>
-            <p className="text-muted">{order.email}</p>
-            <a href={whatsappLink(order.whatsapp, `Hi ${order.customer_name}, about order ${order.order_number}`)} target="_blank" rel="noreferrer" className="text-[#25d366] hover:underline">
+            <p className="break-all text-muted">{order.email}</p>
+            <a href={whatsappLink(order.whatsapp, `Hi ${order.customer_name}, about order ${order.order_number}`)} target="_blank" rel="noreferrer" className="inline-flex min-h-11 items-center text-[#25d366] hover:underline lg:min-h-0">
               {order.whatsapp} ↗
             </a>
           </div>
@@ -161,7 +161,7 @@ export default async function AdminOrder({ params }: { params: Promise<{ id: str
               {order.order_items?.map((i) => (
                 <li key={i.id} className="flex justify-between gap-2">
                   <span>{i.title} · {i.platform} {i.slot}</span>
-                  <span>{inr(Number(i.unit_price))}</span>
+                  <span className="shrink-0">{inr(Number(i.unit_price))}</span>
                 </li>
               ))}
             </ul>
@@ -170,7 +170,7 @@ export default async function AdminOrder({ params }: { params: Promise<{ id: str
           <form action={setStatus} className="space-y-2 border-t border-line pt-4">
             <label className="label" htmlFor="status">Manually set status</label>
             <input type="hidden" name="orderId" value={order.id} />
-            <select id="status" name="status" defaultValue={order.status} className="input text-sm">
+            <select id="status" name="status" defaultValue={order.status} className="input sm:text-sm">
               {(Object.keys(STATUS_META) as OrderStatus[]).map((s) => (
                 <option key={s} value={s}>{STATUS_META[s].label}</option>
               ))}

@@ -5,9 +5,9 @@ import { CATEGORIES } from "@/lib/store";
 export default function Footer() {
   const wa = process.env.NEXT_PUBLIC_WHATSAPP;
   return (
-    <footer className="mt-24 border-t border-line bg-panel/40">
-      <div className="mx-auto grid max-w-7xl gap-10 px-4 py-14 md:grid-cols-4">
-        <div className="md:col-span-2">
+    <footer className="mt-16 border-t sm:mt-24 border-line bg-panel/40">
+      <div className="mx-auto grid max-w-7xl grid-cols-2 gap-x-6 gap-y-10 px-4 py-10 sm:py-14 md:grid-cols-4">
+        <div className="col-span-2">
           <Logo />
           <p className="mt-4 max-w-sm text-sm leading-relaxed text-muted">
             PS5 and PS4 games at prices that make sense, in Primary or Secondary slots. Pay with any UPI app and
@@ -23,10 +23,10 @@ export default function Footer() {
         </div>
         <div>
           <h4 className="font-display text-sm font-semibold uppercase tracking-wider">Shop</h4>
-          <ul className="mt-4 space-y-2.5 text-sm text-muted">
+          <ul className="mt-2 text-sm text-muted lg:mt-4 lg:space-y-2.5">
             {CATEGORIES.map((c) => (
               <li key={c.slug}>
-                <Link href={`/collections/${c.slug}`} className="hover:text-white">
+                <Link href={`/collections/${c.slug}`} className="inline-flex min-h-11 items-center hover:text-white lg:min-h-0">
                   {c.label}
                 </Link>
               </li>
@@ -35,13 +35,13 @@ export default function Footer() {
         </div>
         <div>
           <h4 className="font-display text-sm font-semibold uppercase tracking-wider">Help</h4>
-          <ul className="mt-4 space-y-2.5 text-sm text-muted">
-            <li><Link href="/#how-it-works" className="hover:text-white">How delivery works</Link></li>
-            <li><Link href="/#faq" className="hover:text-white">FAQ</Link></li>
-            <li><Link href="/orders" className="hover:text-white">Track my order</Link></li>
+          <ul className="mt-2 text-sm text-muted lg:mt-4 lg:space-y-2.5">
+            <li><Link href="/#how-it-works" className="inline-flex min-h-11 items-center hover:text-white lg:min-h-0">How delivery works</Link></li>
+            <li><Link href="/#faq" className="inline-flex min-h-11 items-center hover:text-white lg:min-h-0">FAQ</Link></li>
+            <li><Link href="/orders" className="inline-flex min-h-11 items-center hover:text-white lg:min-h-0">Track my order</Link></li>
             {wa && (
               <li>
-                <a href={`https://wa.me/${wa}`} target="_blank" rel="noreferrer" className="hover:text-white">
+                <a href={`https://wa.me/${wa}`} target="_blank" rel="noreferrer" className="inline-flex min-h-11 items-center hover:text-white lg:min-h-0">
                   WhatsApp support
                 </a>
               </li>
@@ -49,7 +49,7 @@ export default function Footer() {
           </ul>
         </div>
       </div>
-      <div className="border-t border-line py-5 text-center text-xs text-muted">
+      <div className="border-t border-line px-4 py-5 pb-24 text-center text-xs text-muted sm:pb-5">
         © {new Date().getFullYear()} PS GAMING HUB. Not affiliated with Sony Interactive Entertainment. All game names and
         trademarks belong to their respective owners.
       </div>

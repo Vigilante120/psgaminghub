@@ -23,7 +23,7 @@ export default function AddToCart({ product }: { product: Product }) {
             <button
               key={p}
               onClick={() => setPlatform(p)}
-              className={`rounded-xl border px-5 py-2.5 font-display text-sm font-semibold tracking-wider transition ${
+              className={`min-h-11 rounded-xl border px-5 py-2.5 font-display text-sm font-semibold tracking-wider transition ${
                 platform === p ? "border-brand bg-brand/15 text-white" : "border-line text-muted hover:text-white"
               }`}
             >
@@ -58,7 +58,7 @@ export default function AddToCart({ product }: { product: Product }) {
       </div>
 
       <button
-        className="btn btn-primary w-full py-3.5 text-base"
+        className="btn btn-primary w-full py-3.5 text-sm sm:text-base"
         onClick={() =>
           add({
             productId: product.id,

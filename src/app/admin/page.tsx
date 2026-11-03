@@ -39,14 +39,14 @@ export default async function AdminOrders({ searchParams }: { searchParams: Prom
   return (
     <div>
       <div className="flex flex-wrap items-end justify-between gap-4">
-        <h1 className="font-display text-3xl font-bold uppercase tracking-wide">Orders</h1>
-        <form className="w-full max-w-xs">
+        <h1 className="font-display text-2xl font-bold uppercase tracking-wide sm:text-3xl">Orders</h1>
+        <form className="w-full sm:max-w-xs">
           <input type="hidden" name="status" value={tab} />
-          <input name="q" defaultValue={sp.q} placeholder="Search order #, UTR, name, phone…" className="input h-10 py-0 text-sm" />
+          <input name="q" defaultValue={sp.q} placeholder="Search order #, UTR, name, phone…" className="input h-11 py-0 sm:text-sm lg:h-10" />
         </form>
       </div>
 
-      <div className="mt-5 flex flex-wrap gap-2">
+      <div className="no-scrollbar -mx-4 mt-4 flex gap-2 overflow-x-auto px-4 sm:mx-0 sm:mt-5 sm:flex-wrap sm:px-0">
         {TABS.map((t) => {
           const n = t.key === "all" ? all?.length ?? 0 : counts[t.key] ?? 0;
           const urgent = (t.key === "payment_submitted" || t.key === "processing") && n > 0;
@@ -54,7 +54,7 @@ export default async function AdminOrders({ searchParams }: { searchParams: Prom
             <Link
               key={t.key}
               href={`/admin?status=${t.key}`}
-              className={`flex items-center gap-2 rounded-full border px-4 py-1.5 text-sm font-semibold ${
+              className={`flex min-h-11 shrink-0 items-center gap-2 whitespace-nowrap rounded-full border px-4 py-1.5 text-sm font-semibold lg:min-h-0 ${
                 tab === t.key ? "border-brand bg-brand/15" : "border-line text-muted hover:text-white"
               }`}
             >
@@ -67,7 +67,37 @@ export default async function AdminOrders({ searchParams }: { searchParams: Prom
 
       {tab !== "all" && <p className="mt-4 text-sm text-muted">{STATUS_META[tab].label}: {orders.length} orders</p>}
 
-      <div className="mt-4 overflow-x-auto rounded-2xl border border-line">
+      {/* Phones: one card per order */}
+      <ul className="mt-4 space-y-3 md:hidden">
+        {orders.length === 0 && (
+          <li className="rounded-2xl border border-line bg-panel px-4 py-12 text-center text-muted">Nothing here. 🎮</li>
+        )}
+        {orders.map((o) => (
+          <li key={o.id}>
+            <Link href={`/admin/orders/${o.id}`} className="block rounded-2xl border border-line bg-panel p-4 active:bg-panel-2">
+              <div className="flex items-start justify-between gap-3">
+                <div className="min-w-0">
+                  <div className="font-display font-bold text-brand-2">{o.order_number}</div>
+                  <div className="text-xs text-muted">{formatDate(o.created_at)}</div>
+                </div>
+                <StatusBadge status={o.status} />
+              </div>
+              <p className="mt-3 line-clamp-2 text-sm">{o.order_items?.map((i) => `${i.title} (${i.platform} ${i.slot})`).join(", ")}</p>
+              <div className="mt-3 flex items-end justify-between gap-3 border-t border-line pt-3">
+                <div className="min-w-0 text-sm">
+                  <div className="truncate">{o.delivery_name ?? o.customer_name}</div>
+                  <div className="truncate text-xs text-muted">{o.delivery_phone ?? o.whatsapp}</div>
+                  {o.utr && <div className="mt-1 truncate font-mono text-xs text-muted">UTR {o.utr}</div>}
+                </div>
+                <span className="shrink-0 font-display text-lg font-bold">{inr(Number(o.total))}</span>
+              </div>
+            </Link>
+          </li>
+        ))}
+      </ul>
+
+      {/* Tablets and up: table */}
+      <div className="mt-4 hidden overflow-x-auto rounded-2xl border border-line md:block">
         <table className="w-full min-w-[760px] text-left text-sm">
           <thead className="bg-panel-2 text-xs uppercase tracking-wider text-muted">
             <tr>
@@ -88,7 +118,7 @@ export default async function AdminOrders({ searchParams }: { searchParams: Prom
             {orders.map((o) => (
               <tr key={o.id} className="bg-panel hover:bg-panel-2">
                 <td className="px-4 py-3">
-                  <Link href={`/admin/orders/${o.id}`} className="font-display font-bold text-brand-2 hover:underline">
+                  <Link href={`/admin/orders/${o.id}`} className="inline-flex min-h-11 items-center font-display font-bold text-brand-2 hover:underline lg:min-h-0">
                     {o.order_number}
                   </Link>
                   <div className="text-xs text-muted">{formatDate(o.created_at)}</div>
