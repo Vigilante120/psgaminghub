@@ -11,9 +11,9 @@ export default function ProductCard({ product }: { product: Product }) {
       : 0;
 
   return (
-    <div className="group relative flex flex-col overflow-hidden rounded-2xl border border-line bg-panel transition hover:-translate-y-0.5 hover:border-brand/50 hover:shadow-[0_20px_50px_-25px] hover:shadow-brand/60">
+    <div className="group relative flex flex-col overflow-hidden rounded-2xl border border-line bg-panel transition-[translate,scale,border-color,box-shadow] duration-300 ease-out will-change-transform hover:-translate-y-1 hover:border-brand/50 hover:shadow-[0_24px_50px_-22px] hover:shadow-brand/70 active:scale-[0.98] active:duration-100">
       <Link href={`/products/${product.slug}`} className="relative block aspect-[3/4] overflow-hidden">
-        <div className="absolute inset-0 transition duration-500 group-hover:scale-105">
+        <div className="absolute inset-0 transition-transform duration-500 ease-out group-hover:scale-105">
           <Cover title={product.title} url={product.cover_url} />
         </div>
         {off > 0 && (
@@ -31,7 +31,7 @@ export default function ProductCard({ product }: { product: Product }) {
       </Link>
 
       <div className="flex flex-1 flex-col p-3 sm:p-4">
-        <Link href={`/products/${product.slug}`} className="line-clamp-2 min-h-[2.75rem] text-sm font-semibold leading-snug hover:text-brand-2">
+        <Link href={`/products/${product.slug}`} className="line-clamp-2 min-h-[2.75rem] text-sm font-semibold leading-snug transition-colors hover:text-brand-2">
           {product.title}
         </Link>
         <div className="mt-3 flex items-end justify-between gap-1.5 sm:gap-2">

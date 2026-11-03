@@ -5,6 +5,7 @@ import { useRouter } from "next/navigation";
 import { useState } from "react";
 import { useCart } from "@/components/CartContext";
 import Cover from "@/components/Cover";
+import Spinner from "@/components/Spinner";
 import { createClient } from "@/lib/supabase/client";
 import { inr } from "@/lib/store";
 
@@ -22,6 +23,7 @@ export default function CheckoutForm({ email, defaults }: { email: string; defau
 
   async function placeOrder(e: React.FormEvent) {
     e.preventDefault();
+    if (busy) return;
     setBusy(true);
     setError(null);
 
@@ -55,7 +57,7 @@ export default function CheckoutForm({ email, defaults }: { email: string; defau
   }
 
   return (
-    <form onSubmit={placeOrder} className="mt-6 grid gap-6 sm:mt-8 sm:gap-8 lg:grid-cols-[1fr_400px]">
+    <form onSubmit={placeOrder} className="animate-rise mt-6 grid gap-6 sm:mt-8 sm:gap-8 lg:grid-cols-[1fr_400px]">
       <div className="space-y-6">
         <section className="rounded-2xl border border-line bg-panel p-4 sm:p-6">
           <h2 className="font-display text-lg font-bold uppercase tracking-wide">Your details</h2>
@@ -120,10 +122,17 @@ export default function CheckoutForm({ email, defaults }: { email: string; defau
           <div className="flex justify-between pt-1 font-display text-xl font-bold"><span>Total</span><span>{inr(total)}</span></div>
         </div>
 
-        {error && <p className="mt-4 rounded-lg bg-hot/10 px-3 py-2 text-sm text-hot">{error}</p>}
+        {error && <p role="alert" className="animate-rise mt-4 rounded-lg bg-hot/10 px-3 py-2 text-sm text-hot">{error}</p>}
 
-        <button className="btn btn-primary mt-5 w-full py-3.5" disabled={busy}>
-          {busy ? "Placing order…" : "Place order & pay with UPI"}
+        <button className="btn btn-primary mt-5 w-full py-3.5" disabled={busy} aria-busy={busy}>
+          {busy ? (
+            <>
+              <Spinner />
+              Placing order…
+            </>
+          ) : (
+            "Place order & pay with UPI"
+          )}
         </button>
         <p className="mt-3 text-center text-xs text-muted">You'll see our UPI QR code on the next screen.</p>
       </aside>

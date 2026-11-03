@@ -3,6 +3,7 @@
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { QRCodeSVG } from "qrcode.react";
+import Spinner from "@/components/Spinner";
 import { createClient } from "@/lib/supabase/client";
 import { deliveryLine, inr, upiLink } from "@/lib/store";
 import type { Slot } from "@/lib/types";
@@ -58,6 +59,7 @@ export default function PaymentPanel({
     if (!name.trim()) return setError("Please enter your name.");
     if (phone.replace(/\D/g, "").length < 10) return setError("Please enter a valid phone number with country code.");
 
+    if (busy) return;
     setBusy(true);
     const supabase = createClient();
     const ext = file.name.split(".").pop()?.toLowerCase() || "jpg";
@@ -174,10 +176,17 @@ export default function PaymentPanel({
             </ul>
           </div>
 
-          {error && <p className="rounded-lg bg-hot/10 px-3 py-2 text-sm text-hot">{error}</p>}
+          {error && <p role="alert" className="animate-rise rounded-lg bg-hot/10 px-3 py-2 text-sm text-hot">{error}</p>}
 
-          <button className="btn btn-primary w-full py-3.5" disabled={busy}>
-            {busy ? "Submitting…" : "I've paid — submit proof"}
+          <button className="btn btn-primary w-full py-3.5" disabled={busy} aria-busy={busy}>
+            {busy ? (
+              <>
+                <Spinner />
+                Submitting…
+              </>
+            ) : (
+              "I've paid — submit proof"
+            )}
           </button>
         </form>
       </div>

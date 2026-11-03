@@ -16,7 +16,7 @@ export default async function SearchPage({ searchParams }: { searchParams: Promi
         <input name="q" defaultValue={q} placeholder="Search games…" className="input" autoFocus />
       </form>
       {q && products.length === 0 && <p className="mt-10 text-muted">No games found. Try a shorter search.</p>}
-      <div className="mt-8 grid grid-cols-2 gap-3 sm:grid-cols-3 sm:gap-4 lg:grid-cols-4 xl:grid-cols-5">
+      <div className="stagger mt-8 grid grid-cols-2 gap-3 sm:grid-cols-3 sm:gap-4 lg:grid-cols-4 xl:grid-cols-5">
         {products.map((p) => (
           <ProductCard key={p.id} product={p} />
         ))}

@@ -23,7 +23,7 @@ export default function AddToCart({ product }: { product: Product }) {
             <button
               key={p}
               onClick={() => setPlatform(p)}
-              className={`min-h-11 rounded-xl border px-5 py-2.5 font-display text-sm font-semibold tracking-wider transition ${
+              className={`min-h-11 rounded-xl border px-5 py-2.5 font-display text-sm font-semibold tracking-wider transition active:scale-95 ${
                 platform === p ? "border-brand bg-brand/15 text-white" : "border-line text-muted hover:text-white"
               }`}
             >
@@ -44,7 +44,7 @@ export default function AddToCart({ product }: { product: Product }) {
                 key={s.slot}
                 onClick={() => !disabled && setSlot(s.slot)}
                 disabled={disabled}
-                className={`rounded-xl border px-4 py-3 text-left transition disabled:cursor-not-allowed disabled:opacity-40 ${
+                className={`rounded-xl border px-4 py-3 text-left transition enabled:active:scale-[0.98] disabled:cursor-not-allowed disabled:opacity-40 ${
                   slot === s.slot ? "border-brand bg-brand/15" : "border-line hover:border-[#33405f]"
                 }`}
               >

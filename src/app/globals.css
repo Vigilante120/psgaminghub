@@ -57,20 +57,26 @@ body {
     font-size: 0.875rem;
     transition: transform 0.15s, background 0.15s, box-shadow 0.15s, opacity 0.15s;
   }
-  .btn:active {
-    transform: translateY(1px);
+  .btn:active:not(:disabled) {
+    transform: scale(0.98);
   }
   .btn:disabled {
     opacity: 0.5;
     cursor: not-allowed;
+  }
+  /* Busy buttons stay readable: the spinner and label say what's happening */
+  .btn[aria-busy="true"]:disabled {
+    opacity: 0.85;
+    cursor: progress;
   }
   .btn-primary {
     background: var(--color-brand);
     color: white;
     box-shadow: 0 8px 30px -10px rgb(47 107 255 / 0.8);
   }
-  .btn-primary:hover {
+  .btn-primary:hover:not(:disabled) {
     background: #4a7fff;
+    box-shadow: 0 12px 34px -10px rgb(47 107 255 / 0.95);
   }
   .btn-ghost {
     border: 1px solid var(--color-line);
@@ -91,6 +97,10 @@ body {
     font-size: 1rem;
     outline: none;
     transition: border-color 0.15s, box-shadow 0.15s;
+  }
+  .input:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
   }
   .input:focus {
     border-color: var(--color-brand);
@@ -114,6 +124,129 @@ body {
     .btn {
       min-height: 2.75rem;
     }
+  }
+}
+
+/* ---------- Motion ----------
+   Only transform and opacity animate (GPU-composited, no layout work).
+   Entrances fill "backwards" only: once they finish, no animation is left holding a transform,
+   so they never leave a containing block behind for position: fixed children. Everything collapses under prefers-reduced-motion below. */
+
+@keyframes rise {
+  from {
+    opacity: 0;
+    transform: translateY(12px);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+@keyframes fade-in {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+@keyframes pop {
+  0% {
+    opacity: 0;
+    transform: scale(0.5);
+  }
+  60% {
+    opacity: 1;
+    transform: scale(1.1);
+  }
+  100% {
+    opacity: 1;
+    transform: none;
+  }
+}
+@keyframes shake {
+  0%,
+  100% {
+    transform: none;
+  }
+  20% {
+    transform: translateX(-8px);
+  }
+  40% {
+    transform: translateX(7px);
+  }
+  60% {
+    transform: translateX(-5px);
+  }
+  80% {
+    transform: translateX(3px);
+  }
+}
+@keyframes shimmer {
+  from {
+    transform: translateX(-100%);
+  }
+  to {
+    transform: translateX(100%);
+  }
+}
+
+.animate-rise {
+  animation: rise 0.45s cubic-bezier(0.2, 0.7, 0.2, 1) backwards;
+}
+.animate-page {
+  animation: rise 0.35s cubic-bezier(0.2, 0.7, 0.2, 1) backwards;
+}
+.animate-fade-in {
+  animation: fade-in 0.3s ease-out backwards;
+}
+.animate-pop {
+  animation: pop 0.45s cubic-bezier(0.2, 0.7, 0.2, 1) backwards;
+}
+.animate-shake {
+  animation: shake 0.4s cubic-bezier(0.36, 0.07, 0.19, 0.97) backwards;
+}
+
+/* Children fade up one after another; capped so long grids don't keep the user waiting. */
+.stagger > * {
+  animation: rise 0.45s cubic-bezier(0.2, 0.7, 0.2, 1) backwards;
+  animation-delay: 360ms;
+}
+.stagger > :nth-child(1) { animation-delay: 0ms; }
+.stagger > :nth-child(2) { animation-delay: 40ms; }
+.stagger > :nth-child(3) { animation-delay: 80ms; }
+.stagger > :nth-child(4) { animation-delay: 120ms; }
+.stagger > :nth-child(5) { animation-delay: 160ms; }
+.stagger > :nth-child(6) { animation-delay: 200ms; }
+.stagger > :nth-child(7) { animation-delay: 240ms; }
+.stagger > :nth-child(8) { animation-delay: 280ms; }
+.stagger > :nth-child(9) { animation-delay: 320ms; }
+
+/* Placeholder block with a light sweep, shown while Supabase data loads */
+.skeleton {
+  position: relative;
+  overflow: hidden;
+  border-radius: 0.5rem;
+  background: var(--color-panel-2);
+}
+.skeleton::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  transform: translateX(-100%);
+  background: linear-gradient(90deg, transparent, rgb(255 255 255 / 0.06), transparent);
+  animation: shimmer 1.4s ease-in-out infinite;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-delay: 0ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
   }
 }
 

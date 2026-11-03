@@ -14,7 +14,7 @@ const NAV = [
 ];
 
 const iconBtn =
-  "relative grid h-11 w-11 shrink-0 place-items-center rounded-lg border border-line hover:border-[#33405f] lg:h-10 lg:w-10";
+  "relative grid h-11 w-11 shrink-0 place-items-center rounded-lg border border-line transition hover:border-[#33405f] hover:bg-white/5 active:scale-95 lg:h-10 lg:w-10";
 
 export default function Header({ signedIn, isAdmin }: { signedIn: boolean; isAdmin: boolean }) {
   const pathname = usePathname();
@@ -69,7 +69,7 @@ export default function Header({ signedIn, isAdmin }: { signedIn: boolean; isAdm
                 <Link
                   key={n.href}
                   href={n.href}
-                  className={`rounded-lg px-3 py-2 text-sm font-medium transition ${
+                  className={`rounded-lg px-3 py-2 text-sm font-medium transition hover:bg-white/5 active:scale-95 ${
                     active ? "bg-white/5 text-white" : "text-muted hover:text-white"
                   }`}
                 >
@@ -163,7 +163,7 @@ export default function Header({ signedIn, isAdmin }: { signedIn: boolean; isAdm
                   key={n.href}
                   href={n.href}
                   onClick={() => setMenu(false)}
-                  className="flex min-h-12 items-center border-b border-line/60 text-[15px] font-medium"
+                  className="flex min-h-12 items-center border-b border-line/60 text-[15px] font-medium transition-colors active:text-brand-2"
                 >
                   {n.label}
                 </Link>
@@ -171,7 +171,7 @@ export default function Header({ signedIn, isAdmin }: { signedIn: boolean; isAdm
               <Link
                 href={signedIn ? "/orders" : "/login"}
                 onClick={() => setMenu(false)}
-                className="flex min-h-12 items-center border-b border-line/60 text-[15px] font-medium"
+                className="flex min-h-12 items-center border-b border-line/60 text-[15px] font-medium transition-colors active:text-brand-2"
               >
                 {signedIn ? "My orders" : "Sign in"}
               </Link>

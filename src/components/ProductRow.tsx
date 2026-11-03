@@ -12,7 +12,7 @@ export default function ProductRow({ title, href, products }: { title: string; h
           View all →
         </Link>
       </div>
-      <div className="no-scrollbar -mx-4 flex snap-x gap-3 overflow-x-auto sm:gap-4 px-4 pb-2">
+      <div className="stagger no-scrollbar -mx-4 flex snap-x gap-3 overflow-x-auto sm:gap-4 px-4 pb-2">
         {products.map((p) => (
           <div key={p.id} className="w-[47%] shrink-0 snap-start sm:w-[31%] md:w-[23%] lg:w-[18.5%]">
             <ProductCard product={p} />

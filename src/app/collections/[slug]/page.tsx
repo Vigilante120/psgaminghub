@@ -45,7 +45,7 @@ export default async function CollectionPage({ params, searchParams }: Props) {
       {products.length === 0 ? (
         <div className="py-24 text-center text-muted">No products match these filters.</div>
       ) : (
-        <div className="mt-6 grid grid-cols-2 gap-3 sm:grid-cols-3 sm:gap-4 lg:grid-cols-4 xl:grid-cols-5">
+        <div className="stagger mt-6 grid grid-cols-2 gap-3 sm:grid-cols-3 sm:gap-4 lg:grid-cols-4 xl:grid-cols-5">
           {products.map((p) => (
             <ProductCard key={p.id} product={p} />
           ))}

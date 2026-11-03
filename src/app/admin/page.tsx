@@ -54,7 +54,7 @@ export default async function AdminOrders({ searchParams }: { searchParams: Prom
             <Link
               key={t.key}
               href={`/admin?status=${t.key}`}
-              className={`flex min-h-11 shrink-0 items-center gap-2 whitespace-nowrap rounded-full border px-4 py-1.5 text-sm font-semibold lg:min-h-0 ${
+              className={`flex min-h-11 shrink-0 items-center gap-2 whitespace-nowrap rounded-full border px-4 py-1.5 text-sm font-semibold transition active:scale-95 lg:min-h-0 ${
                 tab === t.key ? "border-brand bg-brand/15" : "border-line text-muted hover:text-white"
               }`}
             >
@@ -68,13 +68,13 @@ export default async function AdminOrders({ searchParams }: { searchParams: Prom
       {tab !== "all" && <p className="mt-4 text-sm text-muted">{STATUS_META[tab].label}: {orders.length} orders</p>}
 
       {/* Phones: one card per order */}
-      <ul className="mt-4 space-y-3 md:hidden">
+      <ul className="stagger mt-4 space-y-3 md:hidden">
         {orders.length === 0 && (
           <li className="rounded-2xl border border-line bg-panel px-4 py-12 text-center text-muted">Nothing here. 🎮</li>
         )}
         {orders.map((o) => (
           <li key={o.id}>
-            <Link href={`/admin/orders/${o.id}`} className="block rounded-2xl border border-line bg-panel p-4 active:bg-panel-2">
+            <Link href={`/admin/orders/${o.id}`} className="block rounded-2xl border border-line bg-panel p-4 transition active:scale-[0.99] active:bg-panel-2">
               <div className="flex items-start justify-between gap-3">
                 <div className="min-w-0">
                   <div className="font-display font-bold text-brand-2">{o.order_number}</div>

@@ -1,10 +1,14 @@
 "use client";
 
-import { useState } from "react";
+import { useRef, useState } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import { createClient } from "@/lib/supabase/client";
 import { safeNext } from "@/lib/safe-redirect";
 import PasswordInput from "@/components/PasswordInput";
+import Spinner from "@/components/Spinner";
+
+const BUSY_LABEL = { signin: "Signing in…", signup: "Creating account…", forgot: "Sending link…" };
+const IDLE_LABEL = { signin: "Sign in", signup: "Create account", forgot: "Send reset link" };
 
 export default function LoginForm() {
   const router = useRouter();
@@ -16,13 +20,37 @@ export default function LoginForm() {
   const [whatsapp, setWhatsapp] = useState("");
   const [password, setPassword] = useState("");
   const [confirm, setConfirm] = useState("");
-  const [busy, setBusy] = useState(false);
+  // busy: request in flight. done: signed in, waiting for the redirect; the form stays locked.
+  const [status, setStatus] = useState<"idle" | "busy" | "done">("idle");
+  const inFlight = useRef(false);
+  const cardRef = useRef<HTMLDivElement>(null);
   const [error, setError] = useState<string | null>(
     params.get("error") === "link" ? "That link has expired or was already used. Request a new one." : null
   );
   const [info, setInfo] = useState<string | null>(null);
 
+  const locked = status !== "idle";
+
+  // Restart the shake even when the same error shows twice in a row.
+  function fail(message: string) {
+    setError(message);
+    const el = cardRef.current;
+    if (!el) return;
+    el.classList.remove("animate-shake");
+    void el.offsetWidth;
+    el.classList.add("animate-shake");
+  }
+
+  function signedIn() {
+    setStatus("done");
+    router.replace(next);
+    router.refresh();
+    // If the client-side navigation stalls, fall back to a full page load.
+    setTimeout(() => window.location.assign(next), 6000);
+  }
+
   function switchMode(m: typeof mode) {
+    if (locked) return;
     setMode(m);
     setError(null);
     setInfo(null);
@@ -30,50 +58,58 @@ export default function LoginForm() {
 
   async function submit(e: React.FormEvent) {
     e.preventDefault();
+    if (inFlight.current) return;
     setError(null);
     setInfo(null);
     if (mode === "signup") {
       const digits = whatsapp.replace(/\D/g, "").length;
-      if (digits < 10 || digits > 15) return setError("Enter a valid WhatsApp number with country code, e.g. +91 98765 43210.");
-      if (password !== confirm) return setError("The two passwords don't match.");
+      if (digits < 10 || digits > 15) return fail("Enter a valid WhatsApp number with country code, e.g. +91 98765 43210.");
+      if (password !== confirm) return fail("The two passwords don't match.");
     }
-    setBusy(true);
+    inFlight.current = true;
+    setStatus("busy");
     const supabase = createClient();
 
-    if (mode === "forgot") {
-      const { error } = await supabase.auth.resetPasswordForEmail(email, {
-        redirectTo: `${window.location.origin}/auth/callback?next=/reset-password`,
-      });
-      if (error) setError(error.message);
-      else setInfo("If an account exists for that email, we've sent a link to reset your password.");
-    } else if (mode === "signin") {
-      const { error } = await supabase.auth.signInWithPassword({ email, password });
-      if (error) setError(error.message);
-      else {
-        router.replace(next);
-        router.refresh();
+    try {
+      if (mode === "forgot") {
+        const { error } = await supabase.auth.resetPasswordForEmail(email, {
+          redirectTo: `${window.location.origin}/auth/callback?next=/reset-password`,
+        });
+        if (error) fail(error.message);
+        else setInfo("If an account exists for that email, we've sent a link to reset your password.");
+      } else if (mode === "signin") {
+        const { error } = await supabase.auth.signInWithPassword({ email, password });
+        if (error) fail(error.message);
+        else return signedIn();
+      } else {
+        const { data, error } = await supabase.auth.signUp({
+          email,
+          password,
+          options: {
+            data: { full_name: name.trim(), whatsapp: whatsapp.trim() },
+            emailRedirectTo: `${window.location.origin}/auth/callback?next=${encodeURIComponent(next)}`,
+          },
+        });
+        if (error) fail(error.message);
+        else if (data.session) return signedIn();
+        else setInfo("Check your inbox and click the confirmation link to finish signing up.");
       }
-    } else {
-      const { data, error } = await supabase.auth.signUp({
-        email,
-        password,
-        options: {
-          data: { full_name: name.trim(), whatsapp: whatsapp.trim() },
-          emailRedirectTo: `${window.location.origin}/auth/callback?next=${encodeURIComponent(next)}`,
-        },
-      });
-      if (error) setError(error.message);
-      else if (data.session) {
-        router.replace(next);
-        router.refresh();
-      } else setInfo("Check your inbox and click the confirmation link to finish signing up.");
+    } catch {
+      fail("Couldn't reach the server. Check your connection and try again.");
     }
-    setBusy(false);
+    inFlight.current = false;
+    setStatus("idle");
   }
 
   return (
-    <div className="rounded-3xl border border-line bg-panel p-5 sm:p-8">
-      <h1 className="font-display text-2xl font-bold uppercase tracking-wide sm:text-3xl">
+    // Entrance on the wrapper, shake on the card: two elements, so ending one never replays the other.
+    <div className="animate-rise">
+    <div
+      ref={cardRef}
+      onAnimationEnd={(e) => e.target === e.currentTarget && e.currentTarget.classList.remove("animate-shake")}
+      className="rounded-3xl border border-line bg-panel p-5 sm:p-8"
+    >
+      <h1 key={mode} className="animate-fade-in font-display text-2xl font-bold uppercase tracking-wide sm:text-3xl">
         {mode === "signin" ? "Welcome back" : mode === "signup" ? "Create account" : "Reset password"}
       </h1>
       <p className="mt-2 text-sm text-muted">
@@ -84,9 +120,10 @@ export default function LoginForm() {
             : "Enter your account email and we'll send you a reset link."}
       </p>
 
-      <form onSubmit={submit} className="mt-6 space-y-4">
+      <form onSubmit={submit} className="mt-6" aria-busy={locked}>
+        <fieldset disabled={locked} className={`space-y-4 transition-opacity duration-200 ${locked ? "opacity-60" : ""}`}>
         {mode === "signup" && (
-          <div>
+          <div className="animate-rise">
             <label className="label" htmlFor="name">Full name</label>
             <input id="name" className="input" value={name} onChange={(e) => setName(e.target.value)} required maxLength={100} autoComplete="name" />
           </div>
@@ -96,7 +133,7 @@ export default function LoginForm() {
           <input id="email" type="email" className="input" value={email} onChange={(e) => setEmail(e.target.value)} required autoComplete="email" />
         </div>
         {mode === "signup" && (
-          <div>
+          <div className="animate-rise">
             <label className="label" htmlFor="whatsapp">WhatsApp number</label>
             <input
               id="whatsapp"
@@ -135,7 +172,7 @@ export default function LoginForm() {
         </div>
         )}
         {mode === "signup" && (
-          <div>
+          <div className="animate-rise">
             <label className="label" htmlFor="confirm">Confirm password</label>
             <PasswordInput
               id="confirm"
@@ -148,20 +185,52 @@ export default function LoginForm() {
           </div>
         )}
 
-        {error && <p className="rounded-lg bg-hot/10 px-3 py-2 text-sm text-hot">{error}</p>}
-        {info && <p className="rounded-lg bg-emerald-400/10 px-3 py-2 text-sm text-emerald-300">{info}</p>}
+        </fieldset>
 
-        <button className="btn btn-primary w-full py-3.5" disabled={busy}>
-          {busy ? "Please wait…" : mode === "signin" ? "Sign in" : mode === "signup" ? "Create account" : "Send reset link"}
+        <div aria-live="polite" className="mt-4 space-y-4 empty:mt-0">
+          {error && (
+            <p role="alert" className="animate-rise rounded-lg bg-hot/10 px-3 py-2 text-sm text-hot">
+              {error}
+            </p>
+          )}
+          {info && <p className="animate-rise rounded-lg bg-emerald-400/10 px-3 py-2 text-sm text-emerald-300">{info}</p>}
+        </div>
+
+        <button
+          className={`btn mt-4 w-full py-3.5 ${status === "done" ? "bg-emerald-500 text-white disabled:opacity-100" : "btn-primary"}`}
+          disabled={locked}
+          aria-busy={status === "busy"}
+        >
+          {status === "busy" ? (
+            <>
+              <Spinner />
+              {BUSY_LABEL[mode]}
+            </>
+          ) : status === "done" ? (
+            <>
+              <svg viewBox="0 0 24 24" className="animate-pop h-5 w-5" fill="none" stroke="currentColor" strokeWidth="3" aria-hidden="true">
+                <path d="M5 12.5l4.5 4.5L19 7.5" strokeLinecap="round" strokeLinejoin="round" />
+              </svg>
+              Signed in — redirecting…
+            </>
+          ) : (
+            IDLE_LABEL[mode]
+          )}
         </button>
       </form>
 
       <p className="mt-6 text-center text-sm text-muted">
         {mode === "signin" ? "New here?" : mode === "signup" ? "Already have an account?" : "Remembered it?"}{" "}
-        <button onClick={() => switchMode(mode === "signin" ? "signup" : "signin")} className="inline-flex min-h-11 items-center font-semibold text-brand-2 hover:underline lg:min-h-0">
+        <button
+          type="button"
+          disabled={locked}
+          onClick={() => switchMode(mode === "signin" ? "signup" : "signin")}
+          className="inline-flex min-h-11 items-center font-semibold text-brand-2 transition-opacity hover:underline disabled:opacity-50 lg:min-h-0"
+        >
           {mode === "signin" ? "Create an account" : "Sign in"}
         </button>
       </p>
+    </div>
     </div>
   );
 }

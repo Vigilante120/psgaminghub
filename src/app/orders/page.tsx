@@ -36,12 +36,12 @@ export default async function OrdersPage() {
           <Link href="/collections/all" className="btn btn-primary mt-5">Start shopping</Link>
         </div>
       ) : (
-        <ul className="mt-8 space-y-3">
+        <ul className="stagger mt-8 space-y-3">
           {orders.map((o) => (
             <li key={o.id}>
               <Link
                 href={`/orders/${o.order_number}`}
-                className="flex flex-wrap items-center gap-x-4 gap-y-2 rounded-2xl border border-line bg-panel p-4 transition hover:border-brand/50 sm:p-5"
+                className="flex flex-wrap items-center gap-x-4 gap-y-2 rounded-2xl border border-line bg-panel p-4 transition hover:-translate-y-0.5 hover:border-brand/50 active:scale-[0.99] sm:p-5"
               >
                 <div className="min-w-0 flex-1">
                   <div className="flex flex-wrap items-center gap-x-3 gap-y-1">

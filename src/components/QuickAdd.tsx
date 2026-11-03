@@ -6,7 +6,7 @@ export default function QuickAdd({ product }: { product: Product }) {
   return (
     <Link
       href={`/products/${product.slug}`}
-      className="grid h-11 w-11 shrink-0 place-items-center rounded-xl bg-brand/15 text-brand-2 ring-1 ring-brand/30 transition hover:bg-brand hover:text-white lg:h-10 lg:w-10"
+      className="grid h-11 w-11 shrink-0 place-items-center rounded-xl bg-brand/15 text-brand-2 ring-1 ring-brand/30 transition hover:scale-105 hover:bg-brand hover:text-white hover:shadow-[0_0_18px_-2px] hover:shadow-brand/70 active:scale-90 lg:h-10 lg:w-10"
       aria-label={`Choose console and slot for ${product.title}`}
       title="Choose console & slot"
     >

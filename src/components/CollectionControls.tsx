@@ -32,7 +32,7 @@ export default function CollectionControls({ total }: { total: number }) {
       <div className="flex flex-wrap gap-2">
         <button
           onClick={() => set("platform", null)}
-          className={`min-h-11 rounded-full border px-4 py-1.5 text-xs font-semibold lg:min-h-0 sm:px-3.5 ${!platform ? "border-brand bg-brand/15" : "border-line text-muted hover:text-white"}`}
+          className={`min-h-11 rounded-full border px-4 transition active:scale-95 py-1.5 text-xs font-semibold lg:min-h-0 sm:px-3.5 ${!platform ? "border-brand bg-brand/15" : "border-line text-muted hover:text-white"}`}
         >
           All platforms
         </button>
@@ -40,7 +40,7 @@ export default function CollectionControls({ total }: { total: number }) {
           <button
             key={p}
             onClick={() => set("platform", platform === p ? null : p)}
-            className={`min-h-11 rounded-full border px-4 py-1.5 text-xs font-semibold lg:min-h-0 sm:px-3.5 ${
+            className={`min-h-11 rounded-full border px-4 transition active:scale-95 py-1.5 text-xs font-semibold lg:min-h-0 sm:px-3.5 ${
               platform === p ? "border-brand bg-brand/15" : "border-line text-muted hover:text-white"
             }`}
           >
@@ -49,7 +49,7 @@ export default function CollectionControls({ total }: { total: number }) {
         ))}
         <button
           onClick={() => set("sale", params.get("sale") ? null : "1")}
-          className={`min-h-11 rounded-full border px-4 py-1.5 text-xs font-semibold lg:min-h-0 sm:px-3.5 ${
+          className={`min-h-11 rounded-full border px-4 transition active:scale-95 py-1.5 text-xs font-semibold lg:min-h-0 sm:px-3.5 ${
             params.get("sale") ? "border-hot bg-hot/15" : "border-line text-muted hover:text-white"
           }`}
         >
