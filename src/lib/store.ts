@@ -79,6 +79,8 @@ export function formatDate(iso: string | null) {
     year: "numeric",
     hour: "numeric",
     minute: "2-digit",
+    // Servers run in UTC; always show India time.
+    timeZone: "Asia/Kolkata",
   });
 }
 
