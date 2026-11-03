@@ -3,6 +3,7 @@
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { createClient } from "@/lib/supabase/client";
+import PasswordInput from "@/components/PasswordInput";
 
 export default function ResetPasswordForm() {
   const router = useRouter();
@@ -35,10 +36,8 @@ export default function ResetPasswordForm() {
       <form onSubmit={submit} className="mt-6 space-y-4">
         <div>
           <label className="label" htmlFor="password">New password</label>
-          <input
+          <PasswordInput
             id="password"
-            type="password"
-            className="input"
             value={password}
             onChange={(e) => setPassword(e.target.value)}
             required
@@ -48,10 +47,8 @@ export default function ResetPasswordForm() {
         </div>
         <div>
           <label className="label" htmlFor="confirm">Confirm new password</label>
-          <input
+          <PasswordInput
             id="confirm"
-            type="password"
-            className="input"
             value={confirm}
             onChange={(e) => setConfirm(e.target.value)}
             required

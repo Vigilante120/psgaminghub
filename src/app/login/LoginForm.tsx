@@ -4,6 +4,7 @@ import { useState } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import { createClient } from "@/lib/supabase/client";
 import { safeNext } from "@/lib/safe-redirect";
+import PasswordInput from "@/components/PasswordInput";
 
 export default function LoginForm() {
   const router = useRouter();
@@ -12,7 +13,9 @@ export default function LoginForm() {
   const [mode, setMode] = useState<"signin" | "signup" | "forgot">("signin");
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
+  const [whatsapp, setWhatsapp] = useState("");
   const [password, setPassword] = useState("");
+  const [confirm, setConfirm] = useState("");
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState<string | null>(
     params.get("error") === "link" ? "That link has expired or was already used. Request a new one." : null
@@ -27,9 +30,14 @@ export default function LoginForm() {
 
   async function submit(e: React.FormEvent) {
     e.preventDefault();
-    setBusy(true);
     setError(null);
     setInfo(null);
+    if (mode === "signup") {
+      const digits = whatsapp.replace(/\D/g, "").length;
+      if (digits < 10 || digits > 15) return setError("Enter a valid WhatsApp number with country code, e.g. +91 98765 43210.");
+      if (password !== confirm) return setError("The two passwords don't match.");
+    }
+    setBusy(true);
     const supabase = createClient();
 
     if (mode === "forgot") {
@@ -50,7 +58,7 @@ export default function LoginForm() {
         email,
         password,
         options: {
-          data: { full_name: name },
+          data: { full_name: name.trim(), whatsapp: whatsapp.trim() },
           emailRedirectTo: `${window.location.origin}/auth/callback?next=${encodeURIComponent(next)}`,
         },
       });
@@ -80,13 +88,31 @@ export default function LoginForm() {
         {mode === "signup" && (
           <div>
             <label className="label" htmlFor="name">Full name</label>
-            <input id="name" className="input" value={name} onChange={(e) => setName(e.target.value)} required />
+            <input id="name" className="input" value={name} onChange={(e) => setName(e.target.value)} required maxLength={100} autoComplete="name" />
           </div>
         )}
         <div>
-          <label className="label" htmlFor="email">Email</label>
+          <label className="label" htmlFor="email">Email address</label>
           <input id="email" type="email" className="input" value={email} onChange={(e) => setEmail(e.target.value)} required autoComplete="email" />
         </div>
+        {mode === "signup" && (
+          <div>
+            <label className="label" htmlFor="whatsapp">WhatsApp number</label>
+            <input
+              id="whatsapp"
+              type="tel"
+              inputMode="tel"
+              className="input"
+              value={whatsapp}
+              onChange={(e) => setWhatsapp(e.target.value)}
+              placeholder="+91 98765 43210"
+              required
+              maxLength={20}
+              autoComplete="tel"
+            />
+            <p className="mt-1.5 text-xs text-muted">We'll message you here to deliver your games.</p>
+          </div>
+        )}
         {mode !== "forgot" && (
         <div>
           <div className="flex items-center justify-between">
@@ -97,17 +123,29 @@ export default function LoginForm() {
               </button>
             )}
           </div>
-          <input
+          <PasswordInput
             id="password"
-            type="password"
-            className="input"
             value={password}
             onChange={(e) => setPassword(e.target.value)}
             required
             minLength={mode === "signup" ? 8 : undefined}
             autoComplete={mode === "signin" ? "current-password" : "new-password"}
           />
+          {mode === "signup" && <p className="mt-1.5 text-xs text-muted">At least 8 characters.</p>}
         </div>
+        )}
+        {mode === "signup" && (
+          <div>
+            <label className="label" htmlFor="confirm">Confirm password</label>
+            <PasswordInput
+              id="confirm"
+              value={confirm}
+              onChange={(e) => setConfirm(e.target.value)}
+              required
+              minLength={8}
+              autoComplete="new-password"
+            />
+          </div>
         )}
 
         {error && <p className="rounded-lg bg-hot/10 px-3 py-2 text-sm text-hot">{error}</p>}
