@@ -1,7 +1,7 @@
 const STEPS = [
   { n: "01", title: "Pick your game", body: "Choose your console (PS5 or PS4) and your slot: Primary or Secondary." },
   { n: "02", title: "Pay with UPI", body: "Scan our QR or tap Pay with any UPI app. The amount and order number are filled in for you." },
-  { n: "03", title: "Send proof & details", body: "On your order page, enter the UTR, upload the payment screenshot and send your details, e.g. PS5 Secondary – John – +91 6239218530." },
+  { n: "03", title: "Send proof & details", body: "On your order page, enter the UTR, upload the payment screenshot and send your details, e.g. PS5 Secondary – John – +91 6239689030." },
   { n: "04", title: "Get your game", body: "We verify the payment and complete delivery with you on WhatsApp. You get the purchase receipt on your order page." },
 ];
 

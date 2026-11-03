@@ -33,7 +33,7 @@ Built-in protections:
    Set each game's **Secondary slot price** in Admin → Products; games without one are sold as Primary only.
 3b. Optional, order emails: create a free [Resend](https://resend.com) account, then set `RESEND_API_KEY` and
    `ORDER_ALERT_EMAIL` (the email you signed up to Resend with) in `.env.local`. You get one email per payment
-   with lines like `PS5 Secondary – John – +91 6239218530`.
+   with lines like `PS5 Secondary – John – +91 6239689030`.
 4. Go to **Authentication → URL Configuration**:
    - **Site URL:** `http://localhost:3000` (change to your real domain after deploying)
    - **Redirect URLs:** add `http://localhost:3000/auth/callback` and later `https://yourdomain.com/auth/callback`

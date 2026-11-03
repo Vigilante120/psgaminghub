@@ -14,7 +14,7 @@ const FAQ = [
   },
   {
     q: "How do I receive my game?",
-    a: "After paying, submit your UTR, screenshot and your details (for example: PS5 Secondary – John – +91 6239218530) on your order page. We verify the payment and complete delivery with you on WhatsApp. You then get the purchase receipt on your order page.",
+    a: "After paying, submit your UTR, screenshot and your details (for example: PS5 Secondary – John – +91 6239689030) on your order page. We verify the payment and complete delivery with you on WhatsApp. You then get the purchase receipt on your order page.",
   },
   {
     q: "How long does delivery take?",

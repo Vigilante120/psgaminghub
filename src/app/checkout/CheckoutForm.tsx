@@ -88,7 +88,7 @@ export default function CheckoutForm({ email, defaults }: { email: string; defau
           <h2 className="font-display text-lg font-bold uppercase tracking-wide">Notes (optional)</h2>
           <textarea id="notes" rows={2} className="input mt-4" value={form.notes} onChange={set("notes")} placeholder="Best time to reach you, etc." />
           <p className="mt-3 text-xs text-muted">
-            After paying, you'll send your details on the order page, e.g. <b className="text-white">PS5 Secondary – John – +91 6239218530</b>.
+            After paying, you'll send your details on the order page, e.g. <b className="text-white">PS5 Secondary – John – +91 6239689030</b>.
           </p>
         </section>
       </div>

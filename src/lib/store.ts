@@ -41,7 +41,7 @@ export function fromPrice(product: Pick<Product, "price" | "secondary_price">) {
   return product.secondary_price != null ? Math.min(product.price, product.secondary_price) : product.price;
 }
 
-/** The details line the customer sends after paying, e.g. "PS5 Secondary – John – +91 6239218530". */
+/** The details line the customer sends after paying, e.g. "PS5 Secondary – John – +91 6239689030". */
 export function deliveryLine(item: { platform: string; slot: Slot }, name: string, phone: string) {
   return `${item.platform} ${item.slot} – ${name.trim()} – ${phone.trim()}`;
 }

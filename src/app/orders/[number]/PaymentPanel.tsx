@@ -161,7 +161,7 @@ export default function PaymentPanel({
                   className="input"
                   value={phone}
                   onChange={(e) => setPhone(e.target.value)}
-                  placeholder="+91 6239218530"
+                  placeholder="+91 6239689030"
                   inputMode="tel"
                   required
                 />
