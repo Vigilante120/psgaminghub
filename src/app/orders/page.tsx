@@ -23,7 +23,16 @@ export default async function OrdersPage() {
       <div className="flex flex-wrap items-end justify-between gap-4">
         <div>
           <h1 className="font-display text-3xl font-bold uppercase tracking-wide sm:text-4xl">My orders</h1>
-          <p className="mt-1 break-all text-sm text-muted">Signed in as {user.email}</p>
+          <div className="mt-3 inline-flex max-w-full items-center gap-3 rounded-2xl border border-brand/30 bg-gradient-to-r from-brand/15 to-violet-500/10 py-2 pl-2 pr-4 shadow-[0_0_24px_-8px_rgb(47_107_255/0.6)]">
+            <span className="relative grid h-9 w-9 shrink-0 place-items-center rounded-full bg-gradient-to-br from-brand-2 via-brand to-violet-500 font-display text-base font-bold uppercase text-white">
+              {user.email?.[0] ?? "?"}
+              <span className="absolute -bottom-0.5 -right-0.5 h-3 w-3 rounded-full border-2 border-ink bg-emerald-400" aria-hidden="true" />
+            </span>
+            <span className="min-w-0">
+              <span className="block text-[11px] font-semibold uppercase tracking-[0.15em] text-brand-2">Signed in as</span>
+              <span className="block break-all text-sm font-semibold text-white sm:text-base">{user.email}</span>
+            </span>
+          </div>
         </div>
         <form action="/auth/signout" method="post">
           <button className="btn btn-ghost text-xs">Sign out</button>
