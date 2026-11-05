@@ -6,8 +6,9 @@ import OrderTimeline from "@/components/OrderTimeline";
 import PaymentPanel from "./PaymentPanel";
 import { STATUS_META, deliveryLine, formatDate, inr, rentStatus, slotLabel, whatsappLink } from "@/lib/store";
 import type { Order } from "@/lib/types";
+import { NO_INDEX } from "@/lib/seo";
 
-export const metadata = { title: "Order details" };
+export const metadata = { title: "Order details", robots: NO_INDEX };
 
 export default async function OrderPage({ params }: { params: Promise<{ number: string }> }) {
   const { number } = await params;

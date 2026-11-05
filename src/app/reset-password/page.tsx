@@ -1,6 +1,7 @@
 import ResetPasswordForm from "./ResetPasswordForm";
+import { NO_INDEX } from "@/lib/seo";
 
-export const metadata = { title: "Set a new password" };
+export const metadata = { title: "Set a new password", robots: NO_INDEX };
 
 // Reached from the reset email via /auth/callback, which signs the user in first.
 export default function ResetPasswordPage() {

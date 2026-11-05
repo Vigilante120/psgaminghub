@@ -1,7 +1,8 @@
 import { Suspense } from "react";
 import LoginForm from "./LoginForm";
+import { NO_INDEX } from "@/lib/seo";
 
-export const metadata = { title: "Sign in" };
+export const metadata = { title: "Sign in", robots: NO_INDEX };
 
 export default function LoginPage() {
   return (

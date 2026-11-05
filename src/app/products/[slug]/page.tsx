@@ -8,6 +8,8 @@ import AddToCart from "@/components/AddToCart";
 import HowItWorks from "@/components/HowItWorks";
 import SlotInfo from "@/components/SlotInfo";
 import ProductRow from "@/components/ProductRow";
+import JsonLd from "@/components/JsonLd";
+import { breadcrumbJsonLd, productDescription, productJsonLd } from "@/lib/seo";
 
 type Props = { params: Promise<{ slug: string }> };
 
@@ -15,10 +17,15 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const { slug } = await params;
   const p = await getProductBySlug(slug);
   if (!p) return { title: "Not found" };
+  const title = `${p.title} (${productConsoles(p).join(" / ")}) — from ${inr(fromPrice(p))}`;
+  const description = productDescription(p);
+  const images = p.cover_url ? [{ url: p.cover_url, alt: p.title }] : undefined;
   return {
-    title: `${p.title} (${productConsoles(p).join(" / ")}) — from ${inr(fromPrice(p))}`,
-    description: p.description ?? undefined,
-    openGraph: p.cover_url ? { images: [p.cover_url] } : undefined,
+    title,
+    description,
+    alternates: { canonical: `/products/${p.slug}` },
+    openGraph: { type: "website", url: `/products/${p.slug}`, title, description, images },
+    twitter: { card: images ? "summary_large_image" : "summary", title, description, images },
   };
 }
 
@@ -35,6 +42,16 @@ export default async function ProductPage({ params }: Props) {
 
   return (
     <>
+      <JsonLd
+        data={[
+          productJsonLd(product),
+          breadcrumbJsonLd([
+            { name: "Home", path: "/" },
+            { name: categoryLabel(product.category), path: `/collections/${product.category}` },
+            { name: product.title, path: `/products/${product.slug}` },
+          ]),
+        ]}
+      />
       <div className="mx-auto max-w-7xl px-4 py-6 sm:py-10">
         <nav className="-mt-3 mb-1 break-words text-xs text-muted sm:mt-0 sm:mb-6">
           <Link href="/" className="inline-flex min-h-11 items-center hover:text-white lg:min-h-0">Home</Link> /{" "}

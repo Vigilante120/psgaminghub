@@ -15,7 +15,15 @@ type Props = {
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const { slug } = await params;
   const cat = CATEGORIES.find((c) => c.slug === slug);
-  return { title: cat?.label ?? "Collection", description: cat?.blurb };
+  if (!cat) return { title: "Collection" };
+  const title = `${cat.label}: Buy PS5 & PS4 Games in India`;
+  const description = `${cat.blurb}. Best prices in India, pay with UPI, fast delivery on WhatsApp.`;
+  return {
+    title,
+    description,
+    alternates: { canonical: `/collections/${cat.slug}` },
+    openGraph: { url: `/collections/${cat.slug}`, title, description },
+  };
 }
 
 export default async function CollectionPage({ params, searchParams }: Props) {

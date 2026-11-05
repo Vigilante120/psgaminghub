@@ -1,8 +1,9 @@
 import { redirect } from "next/navigation";
 import { getSessionInfo } from "@/lib/supabase/server";
 import CheckoutForm from "./CheckoutForm";
+import { NO_INDEX } from "@/lib/seo";
 
-export const metadata = { title: "Checkout" };
+export const metadata = { title: "Checkout", robots: NO_INDEX };
 
 export default async function CheckoutPage() {
   const { supabase, user } = await getSessionInfo();

@@ -5,6 +5,8 @@ import HowItWorks from "@/components/HowItWorks";
 import Cover from "@/components/Cover";
 import SlotInfo from "@/components/SlotInfo";
 
+export const metadata = { alternates: { canonical: "/" } };
+
 const PERKS = ["⚡ Fast delivery", "💸 Best prices in India", "📲 Pay with any UPI app", "🎧 WhatsApp support", "✅ On your own account", "🧾 Purchase receipt with every order"];
 
 const FAQ = [

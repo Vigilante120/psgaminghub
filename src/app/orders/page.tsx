@@ -4,8 +4,9 @@ import { getSessionInfo } from "@/lib/supabase/server";
 import StatusBadge from "@/components/StatusBadge";
 import { formatDate, inr } from "@/lib/store";
 import type { Order } from "@/lib/types";
+import { NO_INDEX } from "@/lib/seo";
 
-export const metadata = { title: "My orders" };
+export const metadata = { title: "My orders", robots: NO_INDEX };
 
 export default async function OrdersPage() {
   const { supabase, user } = await getSessionInfo();

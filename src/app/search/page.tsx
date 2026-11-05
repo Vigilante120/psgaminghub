@@ -1,7 +1,8 @@
 import { getProducts } from "@/lib/products";
 import ProductCard from "@/components/ProductCard";
+import { NO_INDEX } from "@/lib/seo";
 
-export const metadata = { title: "Search" };
+export const metadata = { title: "Search", robots: NO_INDEX };
 
 export default async function SearchPage({ searchParams }: { searchParams: Promise<{ q?: string }> }) {
   const { q = "" } = await searchParams;
