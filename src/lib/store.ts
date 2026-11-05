@@ -15,25 +15,44 @@ export function productConsoles(product: Pick<Product, "platforms">): Console[] 
   return CONSOLES.filter((c) => product.platforms.includes(c));
 }
 
-export const SLOTS: { slot: Slot; title: string; points: string[] }[] = [
+// hint: the one-liner shown on the slot picker.
+export const SLOTS: { slot: Slot; title: string; hint: string; points: string[] }[] = [
   {
     slot: "Primary",
     title: "Primary slot",
+    hint: "Online & offline supported",
     points: ["Play from your personal account", "Lifetime access", "Online & offline supported"],
   },
   {
     slot: "Secondary",
     title: "Secondary slot",
+    hint: "Online only supported",
     points: ["Play from the ID we provide", "Same gameplay and features as Primary", "Online only supported"],
   },
+  {
+    slot: "Rent",
+    title: "Rent · 30 days",
+    hint: "Secondary slot · 30 days from delivery",
+    points: ["Secondary slot on the ID we provide", "30 days from delivery", "Online only supported"],
+  },
 ];
+
+/** How long a Rent lasts, counted from when the order is marked delivered (see migration 006). */
+export const RENT_DAYS = 30;
+
+/** Slot as shown to people: Rent always means a Secondary slot. */
+export function slotLabel(slot: Slot) {
+  return slot === "Rent" ? `Rent (Secondary, ${RENT_DAYS} days)` : slot;
+}
 
 export const SECONDARY_WARNING =
   "You must stay connected to the internet (Wi-Fi) at all times.";
 
 /** Price for a slot, or null when that slot isn't offered. */
-export function slotPrice(product: Pick<Product, "price" | "secondary_price">, slot: Slot): number | null {
-  return slot === "Secondary" ? product.secondary_price : product.price;
+export function slotPrice(product: Pick<Product, "price" | "secondary_price" | "rent_price">, slot: Slot): number | null {
+  if (slot === "Secondary") return product.secondary_price;
+  if (slot === "Rent") return product.rent_price;
+  return product.price;
 }
 
 /** Lowest price across the slots on offer, for "from ₹…" labels. */
@@ -41,9 +60,17 @@ export function fromPrice(product: Pick<Product, "price" | "secondary_price">) {
   return product.secondary_price != null ? Math.min(product.price, product.secondary_price) : product.price;
 }
 
+/** One line about a Rent item's 30 days, or null for bought slots. */
+export function rentStatus(item: { slot: Slot; rent_ends_at: string | null }) {
+  if (item.slot !== "Rent") return null;
+  if (!item.rent_ends_at) return `${RENT_DAYS} days start when delivered`;
+  const ended = new Date(item.rent_ends_at).getTime() <= Date.now();
+  return `${ended ? "Rent ended" : "Rent ends"} ${formatDate(item.rent_ends_at)}`;
+}
+
 /** The details line the customer sends after paying, e.g. "PS5 Secondary – John – +91 6239689030". */
 export function deliveryLine(item: { platform: string; slot: Slot }, name: string, phone: string) {
-  return `${item.platform} ${item.slot} – ${name.trim()} – ${phone.trim()}`;
+  return `${item.platform} ${slotLabel(item.slot)} – ${name.trim()} – ${phone.trim()}`;
 }
 
 export function categoryLabel(slug: string) {

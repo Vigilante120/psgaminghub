@@ -13,6 +13,10 @@ const FAQ = [
     a: "Primary: you play from your personal account, with lifetime access, online and offline. Secondary: you play from the ID we provide, with the same gameplay and features, but online only. With Secondary, you must stay connected to the internet (Wi-Fi) at all times.",
   },
   {
+    q: "How does Rent work?",
+    a: "Rent gives you a Secondary slot (the ID we provide, online only) for 30 days. The 30 days start when we deliver the game. When they're over, we email you the steps to remove the ID from your PS5 or PS4. Primary slots are only sold, never rented.",
+  },
+  {
     q: "How do I receive my game?",
     a: "After paying, submit your UTR, screenshot and your details (for example: PS5 Secondary – John – +91 6239689030) on your order page. We verify the payment and complete delivery with you on WhatsApp. You then get the purchase receipt on your order page.",
   },
@@ -104,8 +108,8 @@ export default async function Home() {
 
       {/* Slots */}
       <section id="slots" className="mx-auto mt-12 max-w-7xl sm:mt-16 scroll-mt-24 px-4">
-        <h2 className="font-display text-2xl font-bold uppercase tracking-wide md:text-3xl">Primary or Secondary?</h2>
-        <p className="mt-2 max-w-2xl text-muted">Every game comes in two slot types. Pick the one that suits how you play.</p>
+        <h2 className="font-display text-2xl font-bold uppercase tracking-wide md:text-3xl">Primary, Secondary or Rent?</h2>
+        <p className="mt-2 max-w-2xl text-muted">Buy a slot to keep, or rent a Secondary slot for 30 days. Pick the one that suits how you play.</p>
         <div className="mt-6">
           <SlotInfo />
         </div>

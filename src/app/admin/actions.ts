@@ -124,6 +124,7 @@ export async function saveProduct(formData: FormData) {
     platforms,
     price: money(formData.get("price"), "Primary price", true),
     secondary_price: money(formData.get("secondary_price"), "Secondary price", false),
+    rent_price: money(formData.get("rent_price"), "Rent price", false),
     compare_at_price: money(formData.get("compare_at_price"), "Original price", false),
     is_featured: formData.get("is_featured") === "on",
     is_active: formData.get("is_active") === "on",

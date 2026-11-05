@@ -4,7 +4,7 @@ import { getSessionInfo } from "@/lib/supabase/server";
 import StatusBadge from "@/components/StatusBadge";
 import OrderTimeline from "@/components/OrderTimeline";
 import PaymentPanel from "./PaymentPanel";
-import { STATUS_META, deliveryLine, formatDate, inr, whatsappLink } from "@/lib/store";
+import { STATUS_META, deliveryLine, formatDate, inr, rentStatus, slotLabel, whatsappLink } from "@/lib/store";
 import type { Order } from "@/lib/types";
 
 export const metadata = { title: "Order details" };
@@ -27,6 +27,7 @@ export default async function OrderPage({ params }: { params: Promise<{ number: 
 
   const wa = process.env.NEXT_PUBLIC_WHATSAPP;
   const canPay = order.status === "awaiting_payment" || order.status === "rejected";
+  const rentals = (order.order_items ?? []).filter((i) => i.slot === "Rent" && i.rent_ends_at);
 
   return (
     <div className="mx-auto max-w-5xl px-4 py-6 sm:py-10">
@@ -83,6 +84,16 @@ export default async function OrderPage({ params }: { params: Promise<{ number: 
             <div className="rounded-2xl border border-emerald-400/30 bg-emerald-400/5 p-4 sm:p-6">
               <h2 className="font-display text-lg font-bold uppercase tracking-wide">Delivered — enjoy your game!</h2>
               <p className="mt-2 text-sm text-muted">Delivered on {formatDate(order.delivered_at)}.</p>
+              {rentals.length > 0 && (
+                <ul className="mt-3 space-y-1.5 rounded-xl border border-amber-400/30 bg-amber-400/10 px-3 py-2 text-sm text-amber-200">
+                  {rentals.map((i) => (
+                    <li key={i.id}>
+                      ⏳ <b>{i.title}</b> ({i.platform}): {rentStatus(i)}
+                    </li>
+                  ))}
+                  <li className="text-xs text-amber-200/80">We'll email you when the rent is over, with the steps to remove the ID.</li>
+                </ul>
+              )}
               {receiptUrl ? (
                 <a href={receiptUrl} target="_blank" rel="noreferrer" className="btn btn-primary mt-4">
                   Download purchase receipt
@@ -112,7 +123,8 @@ export default async function OrderPage({ params }: { params: Promise<{ number: 
               {order.order_items?.map((i) => (
                 <li key={i.id} className="flex justify-between gap-3 text-sm">
                   <span>
-                    {i.title} <span className="text-muted">· {i.platform} {i.slot}</span>
+                    {i.title} <span className="text-muted">· {i.platform} {slotLabel(i.slot)}</span>
+                    {i.slot === "Rent" && <span className="block text-xs text-amber-200">{rentStatus(i)}</span>}
                   </span>
                   <span className="shrink-0">{inr(Number(i.unit_price) * i.quantity)}</span>
                 </li>

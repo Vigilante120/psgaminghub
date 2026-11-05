@@ -45,6 +45,10 @@ export default function ProductForm({ product }: { product?: Product }) {
             />
           </div>
           <div>
+            <label className="label" htmlFor="rent">Rent price, 30 days (₹, Secondary slot — leave empty if not offered)</label>
+            <input id="rent" name="rent_price" type="number" min={0} step="1" defaultValue={p?.rent_price ?? ""} className="input" />
+          </div>
+          <div>
             <label className="label" htmlFor="compare">Original price (₹, optional — shows as strikethrough)</label>
             <input id="compare" name="compare_at_price" type="number" min={0} step="1" defaultValue={p?.compare_at_price ?? ""} className="input" />
           </div>

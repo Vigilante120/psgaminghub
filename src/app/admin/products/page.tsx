@@ -35,6 +35,7 @@ export default async function AdminProducts() {
               <span className="shrink-0 text-right text-sm">
                 <span className="block font-semibold">{inr(Number(p.price))}</span>
                 <span className="block text-xs text-muted">{p.secondary_price != null ? inr(Number(p.secondary_price)) : "—"}</span>
+                {p.rent_price != null && <span className="block text-xs text-muted">Rent {inr(Number(p.rent_price))}</span>}
               </span>
             </Link>
           </li>
@@ -49,7 +50,7 @@ export default async function AdminProducts() {
               <th className="px-4 py-3">Product</th>
               <th className="px-4 py-3">Category</th>
               <th className="px-4 py-3">Platforms</th>
-              <th className="px-4 py-3 text-right">Primary / Secondary</th>
+              <th className="px-4 py-3 text-right">Primary / Secondary / Rent</th>
               <th className="px-4 py-3">Status</th>
             </tr>
           </thead>
@@ -70,6 +71,7 @@ export default async function AdminProducts() {
                   <div className="font-semibold">
                     {inr(Number(p.price))}
                     <span className="text-muted"> / {p.secondary_price != null ? inr(Number(p.secondary_price)) : "—"}</span>
+                    <span className="text-muted"> / {p.rent_price != null ? inr(Number(p.rent_price)) : "—"}</span>
                   </div>
                   {p.compare_at_price && <div className="text-xs text-muted line-through">{inr(Number(p.compare_at_price))}</div>}
                 </td>

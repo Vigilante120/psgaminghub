@@ -2,7 +2,8 @@ export type Category = "playstation-games" | "pc-games" | "playstation-plus";
 export type Platform = "PS5" | "PS4" | "PC";
 /** Consoles we currently sell for. */
 export type Console = "PS5" | "PS4";
-export type Slot = "Primary" | "Secondary";
+/** Rent is a Secondary slot for RENT_DAYS days, starting when the order is delivered. */
+export type Slot = "Primary" | "Secondary" | "Rent";
 
 export type Product = {
   id: string;
@@ -15,6 +16,8 @@ export type Product = {
   price: number;
   /** Secondary slot price; null when Secondary isn't offered. */
   secondary_price: number | null;
+  /** 30-day rent price (Secondary slot); null when rent isn't offered. */
+  rent_price: number | null;
   compare_at_price: number | null;
   cover_url: string | null;
   is_featured: boolean;
@@ -39,6 +42,9 @@ export type OrderItem = {
   slot: Slot;
   unit_price: number;
   quantity: number;
+  /** Rent only: when the 30 days end (set on delivery) and when the "rent is over" email went out. */
+  rent_ends_at: string | null;
+  rent_notified_at: string | null;
 };
 
 export type Order = {

@@ -9,7 +9,7 @@ import { useCart } from "./CartContext";
 const NAV = [
   { href: "/", label: "Home" },
   { href: "/collections/playstation-games", label: "PlayStation Games" },
-  { href: "/#slots", label: "Primary vs Secondary" },
+  { href: "/#slots", label: "Slots & Rent" },
   { href: "/#how-it-works", label: "How it works" },
 ];
 

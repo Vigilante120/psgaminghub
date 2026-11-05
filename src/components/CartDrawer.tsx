@@ -4,7 +4,7 @@ import Link from "next/link";
 import { useEffect } from "react";
 import { useCart } from "./CartContext";
 import Cover from "./Cover";
-import { BUNDLE_OFFER, inr } from "@/lib/store";
+import { BUNDLE_OFFER, inr, slotLabel } from "@/lib/store";
 
 export default function CartDrawer() {
   const { items, open, setOpen, remove, subtotal, discount, discountPercent, total, count } = useCart();
@@ -71,7 +71,7 @@ export default function CartDrawer() {
                       {i.title}
                     </Link>
                     <span className="mt-1 w-fit rounded bg-white/5 px-1.5 py-0.5 text-[11px] font-bold tracking-wider text-muted">
-                      {i.platform} · {i.slot}
+                      {i.platform} · {slotLabel(i.slot)}
                     </span>
                     <div className="mt-auto flex items-center justify-between">
                       <span className="font-display font-bold">{inr(i.price)}</span>

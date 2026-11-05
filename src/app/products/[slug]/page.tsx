@@ -74,7 +74,7 @@ export default async function ProductPage({ params }: Props) {
 
             <ul className="mt-6 grid max-w-md grid-cols-1 gap-2 text-sm text-muted min-[400px]:grid-cols-2">
               <li>⚡ Fast delivery</li>
-              <li>🎮 Primary or Secondary slot</li>
+              <li>🎮 {product.rent_price != null ? "Buy or rent for 30 days" : "Primary or Secondary slot"}</li>
               <li>📲 Pay with any UPI app</li>
               <li>🧾 Purchase receipt included</li>
             </ul>
@@ -89,8 +89,10 @@ export default async function ProductPage({ params }: Props) {
         </div>
 
         <section className="mt-12 sm:mt-16">
-          <h2 className="mb-5 font-display text-2xl font-bold uppercase tracking-wide">Primary or Secondary?</h2>
-          <SlotInfo />
+          <h2 className="mb-5 font-display text-2xl font-bold uppercase tracking-wide">
+            {product.rent_price != null ? "Primary, Secondary or Rent?" : "Primary or Secondary?"}
+          </h2>
+          <SlotInfo showRent={product.rent_price != null} />
         </section>
 
         <section className="mt-12 sm:mt-16">

@@ -3,7 +3,7 @@ import { notFound } from "next/navigation";
 import { requireAdminPage } from "@/lib/supabase/server";
 import StatusBadge from "@/components/StatusBadge";
 import OrderTimeline from "@/components/OrderTimeline";
-import { STATUS_META, deliveryLine, formatDate, inr, whatsappLink } from "@/lib/store";
+import { STATUS_META, deliveryLine, formatDate, inr, whatsappLink, rentStatus, slotLabel } from "@/lib/store";
 import CopyButton from "@/components/CopyButton";
 import type { Order, OrderStatus } from "@/lib/types";
 import { markDelivered, rejectPayment, setStatus, verifyPayment } from "../../actions";
@@ -29,10 +29,14 @@ export default async function AdminOrder({ params }: { params: Promise<{ id: str
   const detailLines = order.delivery_name
     ? (order.order_items ?? []).map((i) => deliveryLine(i, order.delivery_name!, order.delivery_phone ?? "")).join("\n")
     : "";
-  const items = order.order_items?.map((i) => `${i.title} (${i.platform} ${i.slot})`).join(", ") ?? "";
+  const items = order.order_items?.map((i) => `${i.title} (${i.platform} ${slotLabel(i.slot)})`).join(", ") ?? "";
+  const rentNote = (order.order_items ?? [])
+    .filter((i) => i.slot === "Rent" && i.rent_ends_at)
+    .map((i) => ` Your rent of ${i.title} ends on ${formatDate(i.rent_ends_at)}.`)
+    .join("");
   const waMessages = {
     verified: `Hi ${name}, your payment for order ${order.order_number} (${inr(Number(order.total))}) is verified ✅. Are you available now to complete delivery of ${items}?`,
-    delivered: `Hi ${name}, order ${order.order_number} is delivered 🎮. Your receipt is on your order page. Enjoy!`,
+    delivered: `Hi ${name}, order ${order.order_number} is delivered 🎮. Your receipt is on your order page. Enjoy!${rentNote}`,
     rejected: `Hi ${name}, we couldn't verify the payment for order ${order.order_number}. Could you share the correct UTR / screenshot?`,
   };
 
@@ -160,7 +164,15 @@ export default async function AdminOrder({ params }: { params: Promise<{ id: str
             <ul className="mt-2 space-y-1.5">
               {order.order_items?.map((i) => (
                 <li key={i.id} className="flex justify-between gap-2">
-                  <span>{i.title} · {i.platform} {i.slot}</span>
+                  <span>
+                    {i.title} · {i.platform} {slotLabel(i.slot)}
+                    {i.slot === "Rent" && (
+                      <span className="block text-xs text-amber-200">
+                        {rentStatus(i)}
+                        {i.rent_notified_at && ` · expiry email sent ${formatDate(i.rent_notified_at)}`}
+                      </span>
+                    )}
+                  </span>
                   <span className="shrink-0">{inr(Number(i.unit_price))}</span>
                 </li>
               ))}

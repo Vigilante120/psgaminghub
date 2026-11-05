@@ -7,7 +7,7 @@ import { useCart } from "@/components/CartContext";
 import Cover from "@/components/Cover";
 import Spinner from "@/components/Spinner";
 import { createClient } from "@/lib/supabase/client";
-import { inr } from "@/lib/store";
+import { inr, slotLabel } from "@/lib/store";
 
 type Defaults = { name: string; whatsapp: string };
 
@@ -105,7 +105,7 @@ export default function CheckoutForm({ email, defaults }: { email: string; defau
               </div>
               <div className="min-w-0 flex-1">
                 <p className="truncate text-sm font-semibold">{i.title}</p>
-                <p className="text-xs text-muted">{i.platform} · {i.slot}</p>
+                <p className="text-xs text-muted">{i.platform} · {slotLabel(i.slot)}</p>
               </div>
               <span className="shrink-0 text-sm font-semibold">{inr(i.price)}</span>
             </li>
