@@ -1,3 +1,4 @@
 {
+  "regions": ["syd1"],
   "crons": [{ "path": "/api/cron/rent-expiry", "schedule": "30 3 * * *" }]
 }
