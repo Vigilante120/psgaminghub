@@ -1,12 +1,62 @@
+"use client";
+
+import { useRef, useState } from "react";
+import { useRouter } from "next/navigation";
 import type { Product } from "@/lib/types";
 import { CATEGORIES, CONSOLES, categoryLabel } from "@/lib/store";
+import Spinner from "@/components/Spinner";
 import { deleteProduct, saveProduct } from "../actions";
 
 export default function ProductForm({ product }: { product?: Product }) {
   const p = product;
+  const router = useRouter();
+  // busy: saving. done: saved, showing the green button before going back to the list.
+  const [status, setStatus] = useState<"idle" | "busy" | "done">("idle");
+  const [error, setError] = useState<string | null>(null);
+  const [deleting, setDeleting] = useState(false);
+  // A ref, not state: it blocks a second click in the same tick, before React re-renders.
+  const inFlight = useRef(false);
+  const locked = status !== "idle" || deleting;
+
+  async function submit(e: React.FormEvent<HTMLFormElement>) {
+    e.preventDefault();
+    if (inFlight.current) return;
+    inFlight.current = true;
+    // Read the fields before locking: a disabled fieldset leaves its inputs out of FormData.
+    const data = new FormData(e.currentTarget);
+    setError(null);
+    setStatus("busy");
+
+    const result = await saveProduct(data).catch(() => ({
+      ok: false as const,
+      error: "Couldn't reach the server. Check your connection and try again.",
+    }));
+    if (!result.ok) {
+      setError(result.error);
+      setStatus("idle");
+      inFlight.current = false;
+      return;
+    }
+    // Stays locked: the green button shows briefly, then back to the product list.
+    setStatus("done");
+    setTimeout(() => {
+      router.push("/admin/products");
+      router.refresh();
+    }, 900);
+  }
+
+  function confirmDelete(e: React.FormEvent<HTMLFormElement>) {
+    if (locked || !window.confirm(`Delete "${p?.title}" permanently? This can't be undone.`)) {
+      e.preventDefault();
+      return;
+    }
+    setDeleting(true);
+  }
+
   return (
     <div className="max-w-3xl">
-      <form action={saveProduct} className="space-y-5 rounded-2xl border border-line bg-panel p-4 sm:p-6">
+      <form onSubmit={submit} aria-busy={locked} className="space-y-5 rounded-2xl border border-line bg-panel p-4 sm:p-6">
+        <fieldset disabled={locked} className={`space-y-5 transition-opacity duration-200 ${locked ? "opacity-60" : ""}`}>
         {p && <input type="hidden" name="id" value={p.id} />}
 
         <div className="grid gap-4 sm:grid-cols-2">
@@ -92,13 +142,45 @@ export default function ProductForm({ product }: { product?: Product }) {
           </label>
         </div>
 
-        <button className="btn btn-primary w-full sm:w-auto">{p ? "Save changes" : "Create product"}</button>
+        </fieldset>
+
+        {error && (
+          <p key={error} role="alert" className="animate-shake rounded-lg bg-hot/10 px-3 py-2 text-sm text-hot">
+            {error}
+          </p>
+        )}
+
+        <button
+          className={`btn w-full sm:w-auto ${status === "done" ? "bg-emerald-500 text-white disabled:opacity-100" : "btn-primary"}`}
+          disabled={locked}
+          aria-busy={status === "busy"}
+        >
+          {status === "busy" ? (
+            <>
+              <Spinner />
+              {p ? "Saving…" : "Creating…"}
+            </>
+          ) : status === "done" ? (
+            <>
+              <svg viewBox="0 0 24 24" className="animate-pop h-5 w-5" fill="none" stroke="currentColor" strokeWidth="3" aria-hidden="true">
+                <path d="M5 12.5l4.5 4.5L19 7.5" strokeLinecap="round" strokeLinejoin="round" />
+              </svg>
+              {p ? "Changes saved" : "Product created"}
+            </>
+          ) : p ? (
+            "Save changes"
+          ) : (
+            "Create product"
+          )}
+        </button>
       </form>
 
       {p && (
-        <form action={deleteProduct} className="mt-4">
+        <form action={deleteProduct} onSubmit={confirmDelete} className="mt-4">
           <input type="hidden" name="id" value={p.id} />
-          <button className="min-h-11 text-sm text-hot hover:underline lg:min-h-0">Delete product permanently</button>
+          <button disabled={locked} className="min-h-11 text-sm text-hot hover:underline disabled:opacity-50 lg:min-h-0">
+            {deleting ? "Deleting…" : "Delete product permanently"}
+          </button>
           <p className="text-xs text-muted">Tip: untick “Live on store” to hide it instead. Past orders keep their item names either way.</p>
         </form>
       )}

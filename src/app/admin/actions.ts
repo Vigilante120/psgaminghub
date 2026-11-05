@@ -107,7 +107,23 @@ function money(v: FormDataEntryValue | null, label: string, required: boolean) {
   return Math.round(n);
 }
 
-export async function saveProduct(formData: FormData) {
+export type SaveResult = { ok: true } | { ok: false; error: string };
+
+/**
+ * Returns a result instead of redirecting, so the form can show "Changes saved"
+ * before it moves on, and show validation errors inline (production hides thrown messages).
+ */
+export async function saveProduct(formData: FormData): Promise<SaveResult> {
+  try {
+    await writeProduct(formData);
+  } catch (e) {
+    return { ok: false, error: e instanceof Error ? e.message : "Could not save the product." };
+  }
+  revalidatePath("/", "layout");
+  return { ok: true };
+}
+
+async function writeProduct(formData: FormData) {
   const supabase = await requireAdmin();
   const id = String(formData.get("id") ?? "");
   const title = String(formData.get("title") ?? "").trim();
@@ -142,10 +158,7 @@ export async function saveProduct(formData: FormData) {
   const { error } = id
     ? await supabase.from("products").update(row).eq("id", id)
     : await supabase.from("products").insert(row);
-  if (error) throw new Error(error.message);
-
-  revalidatePath("/", "layout");
-  redirect("/admin/products");
+  if (error) throw new Error(error.code === "23505" ? "Another product already uses this URL slug." : error.message);
 }
 
 export async function deleteProduct(formData: FormData) {
