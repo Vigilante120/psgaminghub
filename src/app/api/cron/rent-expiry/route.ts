@@ -46,7 +46,8 @@ export async function GET(request: Request) {
     .eq("purchase.status", "delivered")
     .limit(50);
   if (error) {
-    console.error("rent-expiry: query failed", error.message);
+    // Redact: fetch errors can echo request headers, which carry the service key.
+    console.error("rent-expiry: query failed", error.message.replace(/sb_secret_\S+|eyJ[\w.-]+/g, "[redacted]"));
     return NextResponse.json({ error: "query_failed" }, { status: 500 });
   }
 
