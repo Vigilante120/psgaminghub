@@ -8,10 +8,22 @@ import { useCart } from "./CartContext";
 
 const NAV = [
   { href: "/", label: "Home" },
-  { href: "/collections/playstation-games", label: "PlayStation Games" },
+  { href: "/collections/playstation-games", label: "PlayStation Games", featured: true },
   { href: "/#slots", label: "Slots & Rent" },
   { href: "/#how-it-works", label: "How it works" },
 ];
+
+// Little triangle-circle-cross-square cluster that marks the featured link.
+function PadIcon() {
+  return (
+    <svg viewBox="0 0 24 24" className="h-4 w-4 shrink-0" fill="none" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+      <path d="M12 2.5 15 7.5H9z" stroke="#36d6ff" />
+      <circle cx="18.5" cy="12" r="2.6" stroke="#ff3d6e" />
+      <path d="m10.2 15.8 3.6 3.6m0-3.6-3.6 3.6" stroke="#2f6bff" />
+      <rect x="3" y="9.4" width="5.2" height="5.2" rx="0.8" stroke="#8b5cf6" />
+    </svg>
+  );
+}
 
 const iconBtn =
   "relative grid h-11 w-11 shrink-0 place-items-center rounded-lg border border-line transition hover:border-[#33405f] hover:bg-white/5 active:scale-95 lg:h-10 lg:w-10";
@@ -62,19 +74,31 @@ export default function Header({ signedIn, isAdmin }: { signedIn: boolean; isAdm
 
           <Logo />
 
-          <nav className="ml-6 hidden items-center gap-1 lg:flex">
+          <nav className="ml-2 hidden items-center gap-0.5 lg:flex xl:ml-6 xl:gap-1">
             {NAV.map((n) => {
               const active = n.href === "/" ? pathname === "/" : pathname.startsWith(n.href.split("#")[0]) && !n.href.startsWith("/#");
               return (
-                <Link
-                  key={n.href}
-                  href={n.href}
-                  className={`rounded-lg px-3 py-2 text-sm font-medium transition hover:bg-white/5 active:scale-95 ${
-                    active ? "bg-white/5 text-white" : "text-muted hover:text-white"
-                  }`}
-                >
-                  {n.label}
-                </Link>
+                n.featured ? (
+                  <Link
+                    key={n.href}
+                    href={n.href}
+                    aria-current={active ? "page" : undefined}
+                    className="nav-shine mx-1 inline-flex items-center gap-2 whitespace-nowrap rounded-lg px-3.5 py-2 text-sm font-semibold text-white transition active:scale-95"
+                  >
+                    <PadIcon />
+                    {n.label}
+                  </Link>
+                ) : (
+                  <Link
+                    key={n.href}
+                    href={n.href}
+                    className={`whitespace-nowrap rounded-lg px-2.5 py-2 text-sm xl:px-3 font-medium transition hover:bg-white/5 active:scale-95 ${
+                      active ? "bg-white/5 text-white" : "text-muted hover:text-white"
+                    }`}
+                  >
+                    {n.label}
+                  </Link>
+                )
               );
             })}
           </nav>
@@ -85,7 +109,7 @@ export default function Header({ signedIn, isAdmin }: { signedIn: boolean; isAdm
                 value={q}
                 onChange={(e) => setQ(e.target.value)}
                 placeholder="Search games…"
-                className="input h-10 w-56 py-0 sm:text-sm"
+                className="input h-10 w-56 py-0 sm:text-sm lg:w-36 xl:w-56"
                 aria-label="Search games"
               />
             </form>
@@ -163,9 +187,16 @@ export default function Header({ signedIn, isAdmin }: { signedIn: boolean; isAdm
                   key={n.href}
                   href={n.href}
                   onClick={() => setMenu(false)}
-                  className="flex min-h-12 items-center border-b border-line/60 text-[15px] font-medium transition-colors active:text-brand-2"
+                  className="flex min-h-12 items-center gap-2.5 border-b border-line/60 text-[15px] font-medium transition-colors active:text-brand-2"
                 >
-                  {n.label}
+                  {n.featured ? (
+                    <>
+                      <PadIcon />
+                      <span className="text-gradient font-bold">{n.label}</span>
+                    </>
+                  ) : (
+                    n.label
+                  )}
                 </Link>
               ))}
               <Link

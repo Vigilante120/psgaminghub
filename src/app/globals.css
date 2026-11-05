@@ -238,6 +238,64 @@ body {
   animation: shimmer 1.4s ease-in-out infinite;
 }
 
+/* Featured nav link: a light sweeps around its border. The oversized ::before spins (transform only)
+   and ::after covers all but a 1px edge, so only the border shows the moving gradient. */
+@keyframes shine-spin {
+  to {
+    transform: rotate(1turn);
+  }
+}
+.nav-shine {
+  position: relative;
+  isolation: isolate;
+  overflow: hidden;
+  box-shadow: 0 0 18px -4px rgb(54 214 255 / 0.45);
+  transition: box-shadow 0.2s, transform 0.15s;
+}
+.nav-shine:hover {
+  box-shadow: 0 0 24px -2px rgb(54 214 255 / 0.6);
+}
+.nav-shine::before {
+  content: "";
+  position: absolute;
+  /* A centred square wider than the link, so the spinning light covers every edge at every angle */
+  left: 50%;
+  top: 50%;
+  width: 200%;
+  aspect-ratio: 1;
+  margin: -100% 0 0 -100%;
+  z-index: -2;
+  background: conic-gradient(from 0deg, transparent 0 62%, var(--color-brand-2), var(--color-brand) 82%, #8b5cf6 92%, transparent);
+  animation: shine-spin 3.5s linear infinite;
+}
+.nav-shine::after {
+  content: "";
+  position: absolute;
+  inset: 1.5px;
+  z-index: -1;
+  border-radius: inherit;
+  background: var(--color-ink);
+  transition: background 0.2s;
+}
+.nav-shine:hover::after,
+.nav-shine[aria-current="page"]::after {
+  background: linear-gradient(135deg, rgb(47 107 255 / 0.22), rgb(139 92 246 / 0.18)), var(--color-ink);
+}
+
+/* Floating PlayStation-style shapes behind collection headers */
+@keyframes drift {
+  0%,
+  100% {
+    transform: translateY(0) rotate(var(--r, 0deg));
+  }
+  50% {
+    transform: translateY(-14px) rotate(calc(var(--r, 0deg) + 8deg));
+  }
+}
+.animate-drift {
+  animation: drift 7s ease-in-out infinite;
+}
+
 @media (prefers-reduced-motion: reduce) {
   *,
   *::before,

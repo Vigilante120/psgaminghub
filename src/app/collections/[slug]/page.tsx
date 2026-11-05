@@ -5,6 +5,7 @@ import { getProducts } from "@/lib/products";
 import { CATEGORIES } from "@/lib/store";
 import ProductCard from "@/components/ProductCard";
 import CollectionControls from "@/components/CollectionControls";
+import CollectionHero from "@/components/CollectionHero";
 
 type Props = {
   params: Promise<{ slug: string }>;
@@ -32,9 +33,7 @@ export default async function CollectionPage({ params, searchParams }: Props) {
 
   return (
     <div className="mx-auto max-w-7xl px-4 py-6 sm:py-10">
-      <p className="text-xs font-semibold uppercase tracking-widest text-brand-2">Collection</p>
-      <h1 className="mt-1 font-display text-3xl font-bold uppercase tracking-wide sm:text-4xl md:text-5xl">{cat.label}</h1>
-      <p className="mt-2 text-muted">{cat.blurb}</p>
+      <CollectionHero label={cat.label} blurb={cat.blurb} count={products.length} />
 
       <div className="mt-6 sm:mt-8">
         <Suspense>

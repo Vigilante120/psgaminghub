@@ -4,8 +4,8 @@ export const STORE_NAME = "PS GAMING HUB";
 
 // We only sell PS4 / PS5 games for now. PC games and PS Plus are hidden (see migration 002).
 export const CATEGORIES: { slug: Category | "all"; label: string; blurb: string }[] = [
-  { slug: "all", label: "All Games", blurb: "Every PS5 & PS4 game in the hub" },
-  { slug: "playstation-games", label: "PlayStation Games", blurb: "PS5 & PS4 games, Primary or Secondary slot" },
+  { slug: "all", label: "All Games", blurb: "Every PS5 & PS4 game in the hub: buy Primary or Secondary, or rent for 30 days" },
+  { slug: "playstation-games", label: "PlayStation Games", blurb: "PS5 & PS4 games: buy Primary or Secondary, or rent for 30 days" },
 ];
 
 export const CONSOLES: Console[] = ["PS5", "PS4"];
