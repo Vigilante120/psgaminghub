@@ -87,6 +87,8 @@ export async function GET(request: Request) {
     }
   }
 
+  // One line per run, so the Vercel logs show the job ran and what it did.
+  console.log(`rent-expiry: due ${data?.length ?? 0}, sent ${sent}, failed ${failed.length}`);
   return NextResponse.json({ due: data?.length ?? 0, sent, failed });
 }
 
