@@ -29,6 +29,7 @@ export default async function OrderPage({ params }: { params: Promise<{ number: 
   const wa = process.env.NEXT_PUBLIC_WHATSAPP;
   const canPay = order.status === "awaiting_payment" || order.status === "rejected";
   const rentals = (order.order_items ?? []).filter((i) => i.slot === "Rent" && i.rent_ends_at);
+  const shots = order.payment_screenshot_paths?.length ?? (order.payment_screenshot_path ? 1 : 0);
 
   return (
     <div className="mx-auto max-w-5xl px-4 py-6 sm:py-10">
@@ -64,11 +65,26 @@ export default async function OrderPage({ params }: { params: Promise<{ number: 
 
           {order.status === "payment_submitted" && (
             <div className="rounded-2xl border border-sky-400/30 bg-sky-400/5 p-4 sm:p-6">
-              <h2 className="font-display text-lg font-bold uppercase tracking-wide">Payment received for checking</h2>
+              <h2 className="font-display text-lg font-bold uppercase tracking-wide">Screenshot received ✅</h2>
               <p className="mt-2 text-sm text-muted">
-                UTR <span className="break-all font-mono text-white">{order.utr}</span> was submitted on {formatDate(order.payment_submitted_at)}. We'll
-                verify it and message you on WhatsApp at {order.delivery_phone ?? order.whatsapp}.
+                Sent on {formatDate(order.payment_submitted_at)}. <b className="text-white">Last step:</b> message us on WhatsApp so we can
+                confirm your payment quickly. We'll reply at {order.delivery_phone ?? order.whatsapp}.
               </p>
+              {wa && (
+                <a
+                  href={whatsappLink(
+                    wa,
+                    `Hi PS GAMING HUB, I've paid ${inr(total)} for order ${order.order_number}` +
+                      (shots > 1 ? ` in ${shots} payments` : "") +
+                      `. My screenshot${shots > 1 ? "s are" : " is"} on the website. Please confirm my payment.`
+                  )}
+                  target="_blank"
+                  rel="noreferrer"
+                  className="btn mt-4 w-full bg-[#25d366] py-3.5 text-black hover:bg-[#2ee672] sm:w-auto"
+                >
+                  Confirm payment on WhatsApp
+                </a>
+              )}
             </div>
           )}
 

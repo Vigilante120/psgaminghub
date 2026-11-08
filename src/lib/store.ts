@@ -155,7 +155,7 @@ export const STATUS_META: Record<OrderStatus, { label: string; tone: string; hel
   awaiting_payment: {
     label: "Awaiting payment",
     tone: "bg-amber-400/15 text-amber-300 ring-amber-400/30",
-    help: "Pay via UPI and submit your UTR + screenshot below.",
+    help: "Pay by QR or UPI ID, attach the screenshot below and confirm on WhatsApp.",
   },
   payment_submitted: {
     label: "Verifying payment",
@@ -189,13 +189,23 @@ export function whatsappLink(phone: string, text: string) {
   return `https://wa.me/${digits}?text=${encodeURIComponent(text)}`;
 }
 
-export function upiLink(opts: { amount: number; orderNumber: string }) {
+/** Most a customer can pay in one scan of the store's UPI QR code. */
+export const QR_LIMIT = 2000;
+
+/** Splits a total into QR-sized payments: ₹4,500 → [2000, 2000, 500]. */
+export function splitForQr(total: number, limit = QR_LIMIT) {
+  const parts: number[] = [];
+  for (let left = Math.round(total); left > 0; left -= limit) parts.push(Math.min(limit, left));
+  return parts;
+}
+
+export function upiLink(opts: { amount: number; orderNumber: string; note?: string }) {
   const params = new URLSearchParams({
     pa: process.env.NEXT_PUBLIC_UPI_ID ?? "",
     pn: process.env.NEXT_PUBLIC_UPI_NAME ?? STORE_NAME,
     am: opts.amount.toFixed(2),
     cu: "INR",
-    tn: `Order ${opts.orderNumber}`,
+    tn: opts.note ?? `Order ${opts.orderNumber}`,
   });
   return `upi://pay?${params.toString()}`;
 }

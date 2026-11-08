@@ -20,15 +20,15 @@ const FAQ = [
   },
   {
     q: "How do I receive my game?",
-    a: "After paying, submit your UTR, screenshot and your details (for example: PS5 Secondary – John – +91 6239689030) on your order page. We verify the payment and complete delivery with you on WhatsApp. You then get the purchase receipt on your order page.",
+    a: "After paying, attach the payment screenshot and your details (for example: PS5 Secondary – John – +91 6239689030) on your order page, then confirm with us on WhatsApp. We verify the payment and complete delivery with you on WhatsApp. You then get the purchase receipt on your order page.",
   },
   {
     q: "How long does delivery take?",
     a: "Most orders are completed within minutes of payment verification during working hours. You can track the status any time on your order page.",
   },
   {
-    q: "What is the UTR number?",
-    a: "It's the 12-digit transaction reference your UPI app shows after payment (also called UPI Ref No. or Transaction ID). We use it to match your payment.",
+    q: "How do I pay more than ₹2,000?",
+    a: "Our QR code takes up to ₹2,000 per payment, so for ₹4,000 you scan and pay twice (the order page splits it for you). Or pay the exact amount in one go straight to our UPI ID, shown on your order page. Either way, attach the screenshot and confirm with us on WhatsApp.",
   },
   {
     q: "Do I get lifetime access?",

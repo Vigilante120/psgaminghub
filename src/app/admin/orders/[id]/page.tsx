@@ -15,13 +15,17 @@ export default async function AdminOrder({ params }: { params: Promise<{ id: str
   if (!data) notFound();
   const order = data as Order;
 
-  const [shot, receipt] = await Promise.all([
-    order.payment_screenshot_path
-      ? supabase.storage.from("payment-proofs").createSignedUrl(order.payment_screenshot_path, 60 * 30)
-      : Promise.resolve(null),
+  // Newer orders can have several screenshots (one per ₹2,000 QR payment); older ones have just one.
+  const shotPaths = order.payment_screenshot_paths?.length
+    ? order.payment_screenshot_paths
+    : order.payment_screenshot_path
+      ? [order.payment_screenshot_path]
+      : [];
+  const [shots, receipt] = await Promise.all([
+    Promise.all(shotPaths.map((p) => supabase.storage.from("payment-proofs").createSignedUrl(p, 60 * 30))),
     order.receipt_path ? supabase.storage.from("receipts").createSignedUrl(order.receipt_path, 60 * 30) : Promise.resolve(null),
   ]);
-  const shotUrl = shot?.data?.signedUrl ?? null;
+  const shotUrls = shots.map((s) => s.data?.signedUrl).filter((u): u is string => Boolean(u));
   const receiptUrl = receipt?.data?.signedUrl ?? null;
 
   const name = order.delivery_name ?? order.customer_name;
@@ -37,7 +41,7 @@ export default async function AdminOrder({ params }: { params: Promise<{ id: str
   const waMessages = {
     verified: `Hi ${name}, your payment for order ${order.order_number} (${inr(Number(order.total))}) is verified ✅. Are you available now to complete delivery of ${items}?`,
     delivered: `Hi ${name}, order ${order.order_number} is delivered 🎮. Your receipt is on your order page. Enjoy!${rentNote}`,
-    rejected: `Hi ${name}, we couldn't verify the payment for order ${order.order_number}. Could you share the correct UTR / screenshot?`,
+    rejected: `Hi ${name}, we couldn't verify the payment for order ${order.order_number}. Could you send the correct payment screenshot?`,
   };
 
   return (
@@ -58,25 +62,34 @@ export default async function AdminOrder({ params }: { params: Promise<{ id: str
           {/* Payment proof */}
           <section className="rounded-2xl border border-line bg-panel p-4 sm:p-6">
             <h2 className="font-display text-lg font-bold uppercase tracking-wide">1 · Payment proof</h2>
-            {order.utr ? (
+            {order.payment_submitted_at ? (
               <>
                 <div className="mt-4 grid gap-4 sm:grid-cols-2">
                   <div>
-                    <p className="label">UTR / transaction ID</p>
-                    <p className="break-all font-mono text-lg tracking-wider">{order.utr}</p>
-                    <p className="mt-3 label">Amount to match</p>
+                    {order.utr && (
+                      <>
+                        <p className="label">UTR / transaction ID</p>
+                        <p className="mb-3 break-all font-mono text-lg tracking-wider">{order.utr}</p>
+                      </>
+                    )}
+                    <p className="label">Amount to match</p>
                     <p className="font-display text-xl font-bold">{inr(Number(order.total))}</p>
+                    {shotUrls.length > 1 && (
+                      <p className="text-xs text-muted">Paid in {shotUrls.length} payments (₹2,000 QR limit)</p>
+                    )}
                     <p className="mt-3 text-xs text-muted">Submitted {formatDate(order.payment_submitted_at)}</p>
                     <p className="mt-4 rounded-lg border border-amber-400/30 bg-amber-400/10 p-3 text-xs text-amber-200">
-                      Always check this UTR and amount in your bank / UPI app. Screenshots can be edited.
+                      Always check the amount{shotUrls.length > 1 ? "s" : ""} arrived in your bank / UPI app before verifying. Screenshots can be edited.
                     </p>
                   </div>
-                  {shotUrl && (
-                    <a href={shotUrl} target="_blank" rel="noreferrer" className="block overflow-hidden rounded-xl border border-line">
-                      {/* eslint-disable-next-line @next/next/no-img-element */}
-                      <img src={shotUrl} alt="Payment screenshot" className="max-h-96 w-full object-contain bg-black" />
-                    </a>
-                  )}
+                  <div className="grid gap-3">
+                    {shotUrls.map((url, n) => (
+                      <a key={url} href={url} target="_blank" rel="noreferrer" className="block overflow-hidden rounded-xl border border-line">
+                        {/* eslint-disable-next-line @next/next/no-img-element */}
+                        <img src={url} alt={`Payment screenshot ${n + 1}`} className="max-h-96 w-full bg-black object-contain" />
+                      </a>
+                    ))}
+                  </div>
                 </div>
                 {order.status === "payment_submitted" && (
                   <div className="mt-5 flex flex-wrap items-end gap-3 border-t border-line pt-5">

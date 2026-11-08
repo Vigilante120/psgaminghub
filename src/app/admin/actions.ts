@@ -180,3 +180,29 @@ export async function deleteProduct(formData: FormData) {
   revalidatePath("/", "layout");
   redirect("/admin/products");
 }
+
+export type BulkResult = { ok: true; cancelled: number } | { ok: false; error: string };
+
+/**
+ * Cancels many unpaid orders at once. Only orders still awaiting payment are touched,
+ * so an order that got paid while the admin was selecting is left alone.
+ * The restock trigger runs per row, so every cancelled order puts its copies back.
+ */
+export async function cancelUnpaidOrders(ids: string[]): Promise<BulkResult> {
+  try {
+    const supabase = await requireAdmin();
+    const clean = [...new Set(ids.map(String))].filter((id) => /^[0-9a-f-]{36}$/i.test(id)).slice(0, 200);
+    if (clean.length === 0) return { ok: false, error: "Select at least one order." };
+    const { data, error } = await supabase
+      .from("orders")
+      .update({ status: "cancelled" })
+      .in("id", clean)
+      .eq("status", "awaiting_payment")
+      .select("id");
+    if (error) return { ok: false, error: error.message };
+    refresh();
+    return { ok: true, cancelled: data?.length ?? 0 };
+  } catch (e) {
+    return { ok: false, error: e instanceof Error ? e.message : "Could not cancel the orders." };
+  }
+}

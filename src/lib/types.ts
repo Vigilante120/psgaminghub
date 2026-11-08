@@ -66,6 +66,8 @@ export type Order = {
   status: OrderStatus;
   utr: string | null;
   payment_screenshot_path: string | null;
+  /** Every payment screenshot (one per QR payment); older orders only have payment_screenshot_path. */
+  payment_screenshot_paths: string[] | null;
   receipt_path: string | null;
   admin_note: string | null;
   delivery_name: string | null;

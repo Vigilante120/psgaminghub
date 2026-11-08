@@ -33,6 +33,8 @@ export async function POST(request: Request) {
   const order = data as Order;
   const lines = (order.order_items ?? []).map((i) => deliveryLine(i, order.delivery_name ?? "", order.delivery_phone ?? ""));
   const games = (order.order_items ?? []).map((i) => `${i.quantity > 1 ? `${i.quantity}× ` : ""}${i.title} (${i.platform} ${i.slot})`);
+  const shots = order.payment_screenshot_paths?.length ?? (order.payment_screenshot_path ? 1 : 0);
+  const proof = order.utr ? `UTR ${order.utr}` : `${shots} screenshot${shots === 1 ? "" : "s"} (check the amount in your UPI app)`;
   const adminUrl = `${process.env.NEXT_PUBLIC_SITE_URL ?? "http://localhost:3000"}/admin/orders/${order.id}`;
 
   const text = [
@@ -42,7 +44,7 @@ export async function POST(request: Request) {
     "",
     `Games: ${games.join(", ")}`,
     `Amount: ${inr(Number(order.total))}`,
-    `UTR: ${order.utr}`,
+    `Proof: ${proof}`,
     `Customer email: ${order.email}`,
     "",
     `Verify it here: ${adminUrl}`,
@@ -53,7 +55,7 @@ export async function POST(request: Request) {
     <pre style="font-size:15px;background:#f4f4f5;padding:12px;border-radius:8px">${lines.map(esc).join("\n")}</pre>
     <p><b>Games:</b> ${games.map(esc).join(", ")}<br>
        <b>Amount:</b> ${esc(inr(Number(order.total)))}<br>
-       <b>UTR:</b> ${esc(order.utr ?? "")}<br>
+       <b>Proof:</b> ${esc(proof)}<br>
        <b>Customer email:</b> ${esc(order.email)}</p>
     <p><a href="${esc(adminUrl)}">Open the order and verify the payment →</a></p>`;
 
