@@ -135,7 +135,7 @@ export default async function OrderPage({ params }: { params: Promise<{ number: 
             <div className="mt-4 space-y-1.5 border-t border-line pt-3 text-sm">
               {Number(order.discount) > 0 && (
                 <div className="flex justify-between text-emerald-300">
-                  <span>Bundle discount</span>
+                  <span>Discount</span>
                   <span>−{inr(Number(order.discount))}</span>
                 </div>
               )}
