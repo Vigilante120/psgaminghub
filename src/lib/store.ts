@@ -40,6 +40,29 @@ export const SLOTS: { slot: Slot; title: string; hint: string; points: string[] 
 /** How long a Rent lasts, counted from when the order is marked delivered (see migration 006). */
 export const RENT_DAYS = 30;
 
+/** Most copies of one game + console + slot in a single order (place_order enforces the same cap). */
+export const MAX_QTY = 5;
+/** At or below this many copies, the store shows the exact number ("Only 3 left"). */
+export const LOW_STOCK = 5;
+
+/** Copies left for a slot; null = not tracked. Rent shares the Secondary count. */
+export function slotStock(product: Pick<Product, "primary_stock" | "secondary_stock">, slot: Slot): number | null {
+  return slot === "Primary" ? product.primary_stock : product.secondary_stock;
+}
+
+/** True when every slot the game is sold in has a stock count of 0. */
+export function soldOut(product: Pick<Product, "primary_stock" | "secondary_stock" | "secondary_price">) {
+  const primaryOut = product.primary_stock === 0;
+  const secondaryOut = product.secondary_price == null || product.secondary_stock === 0;
+  return primaryOut && secondaryOut;
+}
+
+export function stockLabel(stock: number | null): { text: string; tone: "ok" | "low" | "out" } {
+  if (stock == null || stock > LOW_STOCK) return { text: "In stock", tone: "ok" };
+  if (stock <= 0) return { text: "Out of stock", tone: "out" };
+  return { text: `Only ${stock} left`, tone: "low" };
+}
+
 /** Slot as shown to people: Rent always means a Secondary slot. */
 export function slotLabel(slot: Slot) {
   return slot === "Rent" ? `Rent (Secondary, ${RENT_DAYS} days)` : slot;

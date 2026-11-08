@@ -1,5 +1,5 @@
 import type { Product } from "@/lib/types";
-import { RENT_DAYS, STORE_NAME, fromPrice, inr, productConsoles } from "@/lib/store";
+import { RENT_DAYS, STORE_NAME, fromPrice, inr, productConsoles, soldOut } from "@/lib/store";
 
 /** Public address of the store, without a trailing slash. Search engines only ever see this one. */
 export const SITE_URL = (process.env.NEXT_PUBLIC_SITE_URL || "https://www.psgaminghub.com").replace(/\/+$/, "");
@@ -42,7 +42,7 @@ export function productJsonLd(p: Product) {
       lowPrice: Math.min(...prices),
       highPrice: Math.max(...prices),
       offerCount: prices.length,
-      availability: "https://schema.org/InStock",
+      availability: soldOut(p) ? "https://schema.org/OutOfStock" : "https://schema.org/InStock",
       url,
       seller: { "@type": "Organization", name: STORE_NAME },
     },

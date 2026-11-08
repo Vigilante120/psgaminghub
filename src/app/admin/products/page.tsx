@@ -1,7 +1,7 @@
 import Link from "next/link";
 import { requireAdminPage } from "@/lib/supabase/server";
 import Cover from "@/components/Cover";
-import { categoryLabel, inr } from "@/lib/store";
+import { LOW_STOCK, categoryLabel, inr } from "@/lib/store";
 import type { Product } from "@/lib/types";
 
 export default async function AdminProducts() {
@@ -36,6 +36,7 @@ export default async function AdminProducts() {
                 <span className="block font-semibold">{inr(Number(p.price))}</span>
                 <span className="block text-xs text-muted">{p.secondary_price != null ? inr(Number(p.secondary_price)) : "—"}</span>
                 {p.rent_price != null && <span className="block text-xs text-muted">Rent {inr(Number(p.rent_price))}</span>}
+                <span className="block text-xs">Stock {stockText(p.primary_stock)} / {stockText(p.secondary_stock)}</span>
               </span>
             </Link>
           </li>
@@ -51,6 +52,7 @@ export default async function AdminProducts() {
               <th className="px-4 py-3">Category</th>
               <th className="px-4 py-3">Platforms</th>
               <th className="px-4 py-3 text-right">Primary / Secondary / Rent</th>
+              <th className="px-4 py-3 text-right">Stock P / S</th>
               <th className="px-4 py-3">Status</th>
             </tr>
           </thead>
@@ -75,6 +77,9 @@ export default async function AdminProducts() {
                   </div>
                   {p.compare_at_price && <div className="text-xs text-muted line-through">{inr(Number(p.compare_at_price))}</div>}
                 </td>
+                <td className="px-4 py-3 text-right font-semibold tabular-nums">
+                  {stockText(p.primary_stock)} / {stockText(p.secondary_stock)}
+                </td>
                 <td className="px-4 py-3 text-xs">
                   {p.is_active ? <span className="text-emerald-300">Live</span> : <span className="text-muted">Hidden</span>}
                   {p.is_featured && <span className="ml-2 text-amber-300">★ Featured</span>}
@@ -86,4 +91,10 @@ export default async function AdminProducts() {
       </div>
     </div>
   );
+}
+
+/** "∞" when not tracked, red at 0, amber when low. */
+function stockText(n: number | null) {
+  if (n == null) return <span className="text-muted">∞</span>;
+  return <span className={n === 0 ? "text-hot" : n <= LOW_STOCK ? "text-amber-300" : ""}>{n}</span>;
 }

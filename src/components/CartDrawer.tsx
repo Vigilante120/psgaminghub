@@ -4,10 +4,11 @@ import Link from "next/link";
 import { useEffect } from "react";
 import { useCart } from "./CartContext";
 import Cover from "./Cover";
-import { gameDiscount, inr, slotLabel } from "@/lib/store";
+import { MAX_QTY, gameDiscount, inr, slotLabel } from "@/lib/store";
+import QtyStepper from "./QtyStepper";
 
 export default function CartDrawer() {
-  const { items, open, setOpen, remove, subtotal, discount, total, count } = useCart();
+  const { items, open, setOpen, remove, setQuantity, subtotal, discount, total, count } = useCart();
 
   useEffect(() => {
     if (!open) return;
@@ -70,12 +71,18 @@ export default function CartDrawer() {
                     <span className="mt-1 w-fit rounded bg-white/5 px-1.5 py-0.5 text-[11px] font-bold tracking-wider text-muted">
                       {i.platform} · {slotLabel(i.slot)}
                     </span>
+                    <div className="mt-2 flex items-center justify-between gap-2">
+                      <QtyStepper size="sm" value={i.quantity} max={MAX_QTY} onChange={(n) => setQuantity(i, n)} />
+                      <span className="text-right font-display font-bold">
+                        {inr(i.price * i.quantity)}
+                        {i.quantity > 1 && <span className="block font-sans text-[11px] font-normal text-muted">{inr(i.price)} each</span>}
+                      </span>
+                    </div>
                     <div className="mt-auto flex items-center justify-between">
-                      <span className="font-display font-bold">
-                        {inr(i.price)}
+                      <span>
                         {gameDiscount(i.price) > 0 && (
-                          <span className="ml-2 rounded bg-hot/15 px-1.5 py-0.5 font-sans text-[11px] font-bold text-hot">
-                            −{inr(gameDiscount(i.price))} Diwali
+                          <span className="rounded bg-hot/15 px-1.5 py-0.5 text-[11px] font-bold text-hot">
+                            −{inr(gameDiscount(i.price) * i.quantity)} Diwali
                           </span>
                         )}
                       </span>

@@ -82,7 +82,7 @@ export default async function AdminOrders({ searchParams }: { searchParams: Prom
                 </div>
                 <StatusBadge status={o.status} />
               </div>
-              <p className="mt-3 line-clamp-2 text-sm">{o.order_items?.map((i) => `${i.title} (${i.platform} ${i.slot})`).join(", ")}</p>
+              <p className="mt-3 line-clamp-2 text-sm">{o.order_items?.map((i) => `${i.quantity > 1 ? `${i.quantity}× ` : ""}${i.title} (${i.platform} ${i.slot})`).join(", ")}</p>
               <div className="mt-3 flex items-end justify-between gap-3 border-t border-line pt-3">
                 <div className="min-w-0 text-sm">
                   <div className="truncate">{o.delivery_name ?? o.customer_name}</div>
@@ -128,7 +128,7 @@ export default async function AdminOrders({ searchParams }: { searchParams: Prom
                   <div className="text-xs text-muted">{o.delivery_phone ?? o.whatsapp}</div>
                 </td>
                 <td className="max-w-[240px] px-4 py-3">
-                  <div className="truncate">{o.order_items?.map((i) => `${i.title} (${i.platform} ${i.slot})`).join(", ")}</div>
+                  <div className="truncate">{o.order_items?.map((i) => `${i.quantity > 1 ? `${i.quantity}× ` : ""}${i.title} (${i.platform} ${i.slot})`).join(", ")}</div>
                 </td>
                 <td className="px-4 py-3 font-mono text-xs">{o.utr ?? "—"}</td>
                 <td className="px-4 py-3 text-right font-semibold">{inr(Number(o.total))}</td>

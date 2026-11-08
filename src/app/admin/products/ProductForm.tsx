@@ -102,6 +102,14 @@ export default function ProductForm({ product }: { product?: Product }) {
             <label className="label" htmlFor="compare">Original price (₹, optional — shows as strikethrough)</label>
             <input id="compare" name="compare_at_price" type="number" min={0} step="1" defaultValue={p?.compare_at_price ?? ""} className="input" />
           </div>
+          <div>
+            <label className="label" htmlFor="primary_stock">Primary stock (copies left — empty = unlimited)</label>
+            <input id="primary_stock" name="primary_stock" type="number" min={0} step="1" defaultValue={p?.primary_stock ?? ""} className="input" />
+          </div>
+          <div>
+            <label className="label" htmlFor="secondary_stock">Secondary stock (shared with Rent — empty = unlimited)</label>
+            <input id="secondary_stock" name="secondary_stock" type="number" min={0} step="1" defaultValue={p?.secondary_stock ?? ""} className="input" />
+          </div>
         </div>
 
         <fieldset>

@@ -19,6 +19,9 @@ export type Product = {
   /** 30-day rent price (Secondary slot); null when rent isn't offered. */
   rent_price: number | null;
   compare_at_price: number | null;
+  /** Copies left per slot type; null = not tracked (always available). Rent uses the Secondary count. */
+  primary_stock: number | null;
+  secondary_stock: number | null;
   cover_url: string | null;
   is_featured: boolean;
   is_active: boolean;

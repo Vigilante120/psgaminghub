@@ -165,6 +165,7 @@ export default async function AdminOrder({ params }: { params: Promise<{ id: str
               {order.order_items?.map((i) => (
                 <li key={i.id} className="flex justify-between gap-2">
                   <span>
+                    {i.quantity > 1 && <b className="mr-1 rounded bg-brand/20 px-1.5 text-brand-2">{i.quantity}×</b>}
                     {i.title} · {i.platform} {slotLabel(i.slot)}
                     {i.slot === "Rent" && (
                       <span className="block text-xs text-amber-200">
@@ -173,7 +174,10 @@ export default async function AdminOrder({ params }: { params: Promise<{ id: str
                       </span>
                     )}
                   </span>
-                  <span className="shrink-0">{inr(Number(i.unit_price))}</span>
+                  <span className="shrink-0 text-right">
+                    {inr(Number(i.unit_price) * i.quantity)}
+                    {i.quantity > 1 && <span className="block text-xs text-muted">{inr(Number(i.unit_price))} each</span>}
+                  </span>
                 </li>
               ))}
             </ul>

@@ -107,6 +107,15 @@ function money(v: FormDataEntryValue | null, label: string, required: boolean) {
   return Math.round(n);
 }
 
+/** Parses a stock count; blank means "not tracked" (unlimited). */
+function stock(v: FormDataEntryValue | null, label: string) {
+  const s = String(v ?? "").trim();
+  if (!s) return null;
+  const n = Number(s);
+  if (!Number.isInteger(n) || n < 0 || n > 100000) throw new Error(`${label} must be a whole number of 0 or more`);
+  return n;
+}
+
 export type SaveResult = { ok: true } | { ok: false; error: string };
 
 /**
@@ -142,6 +151,8 @@ async function writeProduct(formData: FormData) {
     secondary_price: money(formData.get("secondary_price"), "Secondary price", false),
     rent_price: money(formData.get("rent_price"), "Rent price", false),
     compare_at_price: money(formData.get("compare_at_price"), "Original price", false),
+    primary_stock: stock(formData.get("primary_stock"), "Primary stock"),
+    secondary_stock: stock(formData.get("secondary_stock"), "Secondary stock"),
     is_featured: formData.get("is_featured") === "on",
     is_active: formData.get("is_active") === "on",
   };

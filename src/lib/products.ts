@@ -18,6 +18,8 @@ function normalize(rows: Record<string, unknown>[] | null): Product[] {
     secondary_price: r.secondary_price == null ? null : Number(r.secondary_price),
     rent_price: r.rent_price == null ? null : Number(r.rent_price),
     compare_at_price: r.compare_at_price == null ? null : Number(r.compare_at_price),
+    primary_stock: r.primary_stock == null ? null : Number(r.primary_stock),
+    secondary_stock: r.secondary_stock == null ? null : Number(r.secondary_stock),
   }));
 }
 

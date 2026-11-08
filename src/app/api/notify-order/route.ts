@@ -32,7 +32,7 @@ export async function POST(request: Request) {
   const { data } = await supabase.from("orders").select("*, order_items(*)").eq("id", orderId).single();
   const order = data as Order;
   const lines = (order.order_items ?? []).map((i) => deliveryLine(i, order.delivery_name ?? "", order.delivery_phone ?? ""));
-  const games = (order.order_items ?? []).map((i) => `${i.title} (${i.platform} ${i.slot})`);
+  const games = (order.order_items ?? []).map((i) => `${i.quantity > 1 ? `${i.quantity}× ` : ""}${i.title} (${i.platform} ${i.slot})`);
   const adminUrl = `${process.env.NEXT_PUBLIC_SITE_URL ?? "http://localhost:3000"}/admin/orders/${order.id}`;
 
   const text = [

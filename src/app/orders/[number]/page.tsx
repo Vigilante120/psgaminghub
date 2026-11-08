@@ -124,6 +124,7 @@ export default async function OrderPage({ params }: { params: Promise<{ number: 
               {order.order_items?.map((i) => (
                 <li key={i.id} className="flex justify-between gap-3 text-sm">
                   <span>
+                    {i.quantity > 1 && <b className="mr-1">{i.quantity}×</b>}
                     {i.title} <span className="text-muted">· {i.platform} {slotLabel(i.slot)}</span>
                     {i.slot === "Rent" && <span className="block text-xs text-amber-200">{rentStatus(i)}</span>}
                   </span>

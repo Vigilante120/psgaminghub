@@ -105,9 +105,12 @@ export default function CheckoutForm({ email, defaults }: { email: string; defau
               </div>
               <div className="min-w-0 flex-1">
                 <p className="truncate text-sm font-semibold">{i.title}</p>
-                <p className="text-xs text-muted">{i.platform} · {slotLabel(i.slot)}</p>
+                <p className="text-xs text-muted">
+                  {i.platform} · {slotLabel(i.slot)}
+                  {i.quantity > 1 && <> · {i.quantity} copies × {inr(i.price)}</>}
+                </p>
               </div>
-              <span className="shrink-0 text-sm font-semibold">{inr(i.price)}</span>
+              <span className="shrink-0 text-sm font-semibold">{inr(i.price * i.quantity)}</span>
             </li>
           ))}
         </ul>

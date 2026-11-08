@@ -2,14 +2,16 @@
 
 import { createContext, useCallback, useContext, useEffect, useMemo, useState } from "react";
 import type { CartItem } from "@/lib/types";
-import { gameDiscount } from "@/lib/store";
+import { MAX_QTY, gameDiscount } from "@/lib/store";
 
 type CartState = {
   ready: boolean;
   items: CartItem[];
   open: boolean;
   setOpen: (open: boolean) => void;
-  add: (item: Omit<CartItem, "quantity">) => void;
+  /** Adds copies to the line (merging with what's already there), capped at MAX_QTY. */
+  add: (item: Omit<CartItem, "quantity">, quantity?: number) => void;
+  setQuantity: (item: Pick<CartItem, "productId" | "platform" | "slot">, quantity: number) => void;
   remove: (item: Pick<CartItem, "productId" | "platform" | "slot">) => void;
   clear: () => void;
   count: number;
@@ -50,10 +52,19 @@ export function CartProvider({ children }: { children: React.ReactNode }) {
     }
   }, [items, loaded]);
 
-  // Each game is delivered once per slot, so a product + platform + slot is a single line.
-  const add = useCallback((item: Omit<CartItem, "quantity">) => {
-    setItems((prev) => (prev.some((i) => sameLine(i, item)) ? prev : [...prev, { ...item, quantity: 1 }]));
+  // A product + platform + slot is a single line; buying several copies raises its quantity.
+  const add = useCallback((item: Omit<CartItem, "quantity">, quantity = 1) => {
+    setItems((prev) =>
+      prev.some((i) => sameLine(i, item))
+        ? prev.map((i) => (sameLine(i, item) ? { ...i, ...item, quantity: Math.min(MAX_QTY, i.quantity + quantity) } : i))
+        : [...prev, { ...item, quantity: Math.min(MAX_QTY, Math.max(1, quantity)) }]
+    );
     setOpen(true);
+  }, []);
+
+  const setQuantity = useCallback((item: Pick<CartItem, "productId" | "platform" | "slot">, quantity: number) => {
+    const q = Math.min(MAX_QTY, Math.max(1, Math.round(quantity)));
+    setItems((prev) => prev.map((i) => (sameLine(i, item) ? { ...i, quantity: q } : i)));
   }, []);
 
   const remove = useCallback((item: Pick<CartItem, "productId" | "platform" | "slot">) => {
@@ -72,6 +83,7 @@ export function CartProvider({ children }: { children: React.ReactNode }) {
       open,
       setOpen,
       add,
+      setQuantity,
       remove,
       clear,
       count,
@@ -79,7 +91,7 @@ export function CartProvider({ children }: { children: React.ReactNode }) {
       discount,
       total: subtotal - discount,
     };
-  }, [items, open, add, remove, clear, loaded]);
+  }, [items, open, add, setQuantity, remove, clear, loaded]);
 
   return <CartContext.Provider value={value}>{children}</CartContext.Provider>;
 }
