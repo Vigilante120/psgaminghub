@@ -101,15 +101,16 @@ export function categoryLabel(slug: string) {
 }
 
 /**
- * Diwali offer: a flat amount off each game by its price, until endsAt.
- * Shown in the announcement bar and cart; place_order in SQL (migration 007) applies the same rule.
+ * Diwali offer: a flat amount off the whole cart by its total, until endsAt.
+ * Shown in the announcement bar and cart; place_order in SQL (migration 009) applies the same rule.
  */
 export const DIWALI_OFFER = {
-  text: "🪔 Diwali offer: ₹300 off games ₹1,500+ · ₹200 off games ₹1,000–₹1,499",
-  endsAt: "2026-11-08T23:59:59+05:30",
+  text: "🪔 Diwali extended till 9 Nov: ₹350 off carts ₹3,999+ · ₹250 off carts ₹1,000+",
+  endsAt: "2026-11-09T23:59:59+05:30",
+  // Highest first: the first tier the cart total reaches applies.
   tiers: [
-    { minPrice: 1500, off: 300 },
-    { minPrice: 1000, off: 200 },
+    { minTotal: 3999, off: 350 },
+    { minTotal: 1000, off: 250 },
   ],
 };
 
@@ -117,10 +118,16 @@ export function offerActive(now = new Date()) {
   return now < new Date(DIWALI_OFFER.endsAt);
 }
 
-/** Rupees off one copy of a game at this price (0 once the offer has ended). */
-export function gameDiscount(price: number, now = new Date()) {
+/** Rupees off a cart with this subtotal (0 once the offer has ended). */
+export function cartDiscount(subtotal: number, now = new Date()) {
   if (!offerActive(now)) return 0;
-  return DIWALI_OFFER.tiers.find((t) => price >= t.minPrice)?.off ?? 0;
+  return DIWALI_OFFER.tiers.find((t) => subtotal >= t.minTotal)?.off ?? 0;
+}
+
+/** The next bigger discount the cart can reach, for the "add ₹X more" nudge. */
+export function nextDiscountTier(subtotal: number, now = new Date()) {
+  if (!offerActive(now)) return null;
+  return [...DIWALI_OFFER.tiers].reverse().find((t) => subtotal < t.minTotal) ?? null;
 }
 
 export function inr(amount: number) {

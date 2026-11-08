@@ -4,11 +4,12 @@ import Link from "next/link";
 import { useEffect } from "react";
 import { useCart } from "./CartContext";
 import Cover from "./Cover";
-import { MAX_QTY, gameDiscount, inr, slotLabel } from "@/lib/store";
+import { MAX_QTY, inr, nextDiscountTier, slotLabel } from "@/lib/store";
 import QtyStepper from "./QtyStepper";
 
 export default function CartDrawer() {
   const { items, open, setOpen, remove, setQuantity, subtotal, discount, total, count } = useCart();
+  const next = nextDiscountTier(subtotal);
 
   useEffect(() => {
     if (!open) return;
@@ -53,9 +54,19 @@ export default function CartDrawer() {
           </div>
         ) : (
           <>
-            {discount > 0 && (
+            {(discount > 0 || next) && (
               <div className="mx-4 mt-4 rounded-xl border border-hot/30 bg-hot/10 px-4 py-3 text-sm sm:mx-5">
-                🪔 Diwali offer applied: <b className="text-white">{inr(discount)} off</b> your order.
+                {discount > 0 && (
+                  <>
+                    🪔 Diwali offer applied: <b className="text-white">{inr(discount)} off</b> your order.
+                  </>
+                )}
+                {next && (
+                  <span className={discount > 0 ? "mt-1 block text-xs text-muted" : ""}>
+                    {discount > 0 ? "" : "🪔 "}Add {inr(next.minTotal - subtotal)} more to get{" "}
+                    <b className="text-white">{inr(next.off)} off</b>.
+                  </span>
+                )}
               </div>
             )}
             <ul className="flex-1 space-y-3 overflow-y-auto overscroll-contain p-4 sm:p-5">
@@ -78,14 +89,7 @@ export default function CartDrawer() {
                         {i.quantity > 1 && <span className="block font-sans text-[11px] font-normal text-muted">{inr(i.price)} each</span>}
                       </span>
                     </div>
-                    <div className="mt-auto flex items-center justify-between">
-                      <span>
-                        {gameDiscount(i.price) > 0 && (
-                          <span className="rounded bg-hot/15 px-1.5 py-0.5 text-[11px] font-bold text-hot">
-                            −{inr(gameDiscount(i.price) * i.quantity)} Diwali
-                          </span>
-                        )}
-                      </span>
+                    <div className="mt-auto flex items-center justify-end">
                       <button onClick={() => remove(i)} className="-my-2 -mr-2 min-h-11 px-2 text-xs text-muted hover:text-hot lg:min-h-0">
                         Remove
                       </button>

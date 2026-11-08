@@ -2,7 +2,7 @@
 
 import { createContext, useCallback, useContext, useEffect, useMemo, useState } from "react";
 import type { CartItem } from "@/lib/types";
-import { MAX_QTY, gameDiscount } from "@/lib/store";
+import { MAX_QTY, cartDiscount } from "@/lib/store";
 
 type CartState = {
   ready: boolean;
@@ -76,7 +76,7 @@ export function CartProvider({ children }: { children: React.ReactNode }) {
   const value = useMemo<CartState>(() => {
     const count = items.reduce((n, i) => n + i.quantity, 0);
     const subtotal = items.reduce((n, i) => n + i.price * i.quantity, 0);
-    const discount = items.reduce((n, i) => n + gameDiscount(i.price) * i.quantity, 0);
+    const discount = cartDiscount(subtotal);
     return {
       ready: loaded,
       items,
