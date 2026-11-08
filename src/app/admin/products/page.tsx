@@ -1,20 +1,41 @@
 import Link from "next/link";
+import { Suspense } from "react";
 import { requireAdminPage } from "@/lib/supabase/server";
 import Cover from "@/components/Cover";
 import { LOW_STOCK, categoryLabel, inr } from "@/lib/store";
 import type { Product } from "@/lib/types";
+import ProductSearch from "./ProductSearch";
 
-export default async function AdminProducts() {
+/** Lower case, letters and digits only: "marvels" finds "Marvel's", "spiderman" finds "Spider-Man". */
+const squash = (s: string) => s.toLowerCase().replace(/[^a-z0-9]/g, "");
+
+export default async function AdminProducts({ searchParams }: { searchParams: Promise<{ q?: string }> }) {
   const supabase = await requireAdminPage();
+  const { q = "" } = await searchParams;
   const { data } = await supabase.from("products").select("*").order("created_at", { ascending: false });
-  const products = (data ?? []) as Product[];
+  const all = (data ?? []) as Product[];
+  // Every word has to appear in the title or URL slug: "spider man 2" finds "Marvel's Spider-Man 2", "gta v" finds slug gta-v.
+  const words = q.split(/\s+/).map(squash).filter(Boolean);
+  const products = words.length ? all.filter((p) => words.every((w) => squash(`${p.title} ${p.slug}`).includes(w))) : all;
 
   return (
     <div>
       <div className="flex flex-wrap items-center justify-between gap-3">
-        <h1 className="font-display text-2xl font-bold uppercase tracking-wide sm:text-3xl">Products ({products.length})</h1>
+        <h1 className="font-display text-2xl font-bold uppercase tracking-wide sm:text-3xl">
+          Products ({words.length ? `${products.length} of ${all.length}` : all.length})
+        </h1>
         <Link href="/admin/products/new" className="btn btn-primary">+ Add product</Link>
       </div>
+
+      <Suspense>
+        <ProductSearch />
+      </Suspense>
+
+      {products.length === 0 && (
+        <p className="mt-5 rounded-2xl border border-line bg-panel p-8 text-center text-muted">
+          No products match “{q.trim()}”.
+        </p>
+      )}
 
       {/* Phones: one row per product */}
       <ul className="mt-5 divide-y divide-line overflow-hidden rounded-2xl border border-line md:hidden">
