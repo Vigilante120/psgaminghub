@@ -13,7 +13,7 @@ type Defaults = { name: string; whatsapp: string };
 
 export default function CheckoutForm({ email, defaults }: { email: string; defaults: Defaults }) {
   const router = useRouter();
-  const { ready, items, subtotal, discount, discountPercent, total, clear } = useCart();
+  const { ready, items, subtotal, discount, total, clear } = useCart();
   const [form, setForm] = useState({ ...defaults, notes: "" });
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -115,7 +115,7 @@ export default function CheckoutForm({ email, defaults }: { email: string; defau
           <div className="flex justify-between text-muted"><span>Subtotal</span><span>{inr(subtotal)}</span></div>
           {discount > 0 && (
             <div className="flex justify-between text-emerald-300">
-              <span>Bundle discount ({discountPercent}%)</span>
+              <span>🪔 Diwali discount</span>
               <span>−{inr(discount)}</span>
             </div>
           )}

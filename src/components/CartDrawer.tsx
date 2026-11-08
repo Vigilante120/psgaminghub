@@ -4,10 +4,10 @@ import Link from "next/link";
 import { useEffect } from "react";
 import { useCart } from "./CartContext";
 import Cover from "./Cover";
-import { BUNDLE_OFFER, inr, slotLabel } from "@/lib/store";
+import { gameDiscount, inr, slotLabel } from "@/lib/store";
 
 export default function CartDrawer() {
-  const { items, open, setOpen, remove, subtotal, discount, discountPercent, total, count } = useCart();
+  const { items, open, setOpen, remove, subtotal, discount, total, count } = useCart();
 
   useEffect(() => {
     if (!open) return;
@@ -21,8 +21,6 @@ export default function CartDrawer() {
       document.body.style.overflow = overflow;
     };
   }, [open, setOpen]);
-
-  const nextTier = [...BUNDLE_OFFER.tiers].reverse().find((t) => count < t.minItems);
 
   return (
     <div className={`fixed inset-0 z-50 overflow-hidden ${open ? "" : "pointer-events-none"}`} aria-hidden={!open}>
@@ -54,10 +52,9 @@ export default function CartDrawer() {
           </div>
         ) : (
           <>
-            {nextTier && (
-              <div className="mx-4 mt-4 rounded-xl sm:mx-5 border border-brand/30 bg-brand/10 px-4 py-3 text-sm">
-                Add {nextTier.minItems - count} more {nextTier.minItems - count === 1 ? "game" : "games"} to get{" "}
-                <b className="text-brand-2">{nextTier.percent}% off</b> your order.
+            {discount > 0 && (
+              <div className="mx-4 mt-4 rounded-xl border border-hot/30 bg-hot/10 px-4 py-3 text-sm sm:mx-5">
+                🪔 Diwali offer applied: <b className="text-white">{inr(discount)} off</b> your order.
               </div>
             )}
             <ul className="flex-1 space-y-3 overflow-y-auto overscroll-contain p-4 sm:p-5">
@@ -74,7 +71,14 @@ export default function CartDrawer() {
                       {i.platform} · {slotLabel(i.slot)}
                     </span>
                     <div className="mt-auto flex items-center justify-between">
-                      <span className="font-display font-bold">{inr(i.price)}</span>
+                      <span className="font-display font-bold">
+                        {inr(i.price)}
+                        {gameDiscount(i.price) > 0 && (
+                          <span className="ml-2 rounded bg-hot/15 px-1.5 py-0.5 font-sans text-[11px] font-bold text-hot">
+                            −{inr(gameDiscount(i.price))} Diwali
+                          </span>
+                        )}
+                      </span>
                       <button onClick={() => remove(i)} className="-my-2 -mr-2 min-h-11 px-2 text-xs text-muted hover:text-hot lg:min-h-0">
                         Remove
                       </button>
@@ -90,7 +94,7 @@ export default function CartDrawer() {
               </div>
               {discount > 0 && (
                 <div className="flex justify-between text-emerald-300">
-                  <span>Bundle discount ({discountPercent}%)</span>
+                  <span>🪔 Diwali discount</span>
                   <span>−{inr(discount)}</span>
                 </div>
               )}

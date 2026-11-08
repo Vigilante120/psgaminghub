@@ -77,17 +77,27 @@ export function categoryLabel(slug: string) {
   return CATEGORIES.find((c) => c.slug === slug)?.label ?? "Products";
 }
 
-/** Bundle offer shown in the announcement bar and applied at checkout (must match place_order in SQL). */
-export const BUNDLE_OFFER = {
-  text: "Buy 2 games, get 10% off · Buy 3+, get 15% off",
+/**
+ * Diwali offer: a flat amount off each game by its price, until endsAt.
+ * Shown in the announcement bar and cart; place_order in SQL (migration 007) applies the same rule.
+ */
+export const DIWALI_OFFER = {
+  text: "🪔 Diwali offer: ₹300 off games ₹1,500+ · ₹200 off games ₹1,000–₹1,499",
+  endsAt: "2026-11-08T23:59:59+05:30",
   tiers: [
-    { minItems: 3, percent: 15 },
-    { minItems: 2, percent: 10 },
+    { minPrice: 1500, off: 300 },
+    { minPrice: 1000, off: 200 },
   ],
 };
 
-export function bundleDiscountPercent(itemCount: number) {
-  return BUNDLE_OFFER.tiers.find((t) => itemCount >= t.minItems)?.percent ?? 0;
+export function offerActive(now = new Date()) {
+  return now < new Date(DIWALI_OFFER.endsAt);
+}
+
+/** Rupees off one copy of a game at this price (0 once the offer has ended). */
+export function gameDiscount(price: number, now = new Date()) {
+  if (!offerActive(now)) return 0;
+  return DIWALI_OFFER.tiers.find((t) => price >= t.minPrice)?.off ?? 0;
 }
 
 export function inr(amount: number) {

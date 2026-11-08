@@ -2,7 +2,7 @@
 
 import { createContext, useCallback, useContext, useEffect, useMemo, useState } from "react";
 import type { CartItem } from "@/lib/types";
-import { bundleDiscountPercent } from "@/lib/store";
+import { gameDiscount } from "@/lib/store";
 
 type CartState = {
   ready: boolean;
@@ -14,7 +14,7 @@ type CartState = {
   clear: () => void;
   count: number;
   subtotal: number;
-  discountPercent: number;
+  /** Diwali offer: total rupees off across the cart. */
   discount: number;
   total: number;
 };
@@ -65,8 +65,7 @@ export function CartProvider({ children }: { children: React.ReactNode }) {
   const value = useMemo<CartState>(() => {
     const count = items.reduce((n, i) => n + i.quantity, 0);
     const subtotal = items.reduce((n, i) => n + i.price * i.quantity, 0);
-    const discountPercent = bundleDiscountPercent(count);
-    const discount = Math.round((subtotal * discountPercent) / 100);
+    const discount = items.reduce((n, i) => n + gameDiscount(i.price) * i.quantity, 0);
     return {
       ready: loaded,
       items,
@@ -77,7 +76,6 @@ export function CartProvider({ children }: { children: React.ReactNode }) {
       clear,
       count,
       subtotal,
-      discountPercent,
       discount,
       total: subtotal - discount,
     };
