@@ -4,6 +4,7 @@ import { getSessionInfo } from "@/lib/supabase/server";
 import StatusBadge from "@/components/StatusBadge";
 import OrderTimeline from "@/components/OrderTimeline";
 import PaymentPanel from "./PaymentPanel";
+import SetupVideos from "@/components/SetupVideos";
 import { STATUS_META, deliveryLine, formatDate, inr, rentStatus, slotLabel, whatsappLink } from "@/lib/store";
 import type { Order } from "@/lib/types";
 import { NO_INDEX } from "@/lib/seo";
@@ -30,6 +31,8 @@ export default async function OrderPage({ params }: { params: Promise<{ number: 
   const canPay = order.status === "awaiting_payment" || order.status === "rejected";
   const rentals = (order.order_items ?? []).filter((i) => i.slot === "Rent" && i.rent_ends_at);
   const shots = order.payment_screenshot_paths?.length ?? (order.payment_screenshot_path ? 1 : 0);
+  // Consoles in this order, so the setup guide opens on the right one.
+  const consoles = [...new Set((order.order_items ?? []).map((i) => i.platform))];
 
   return (
     <div className="mx-auto max-w-5xl px-4 py-6 sm:py-10">
@@ -94,6 +97,9 @@ export default async function OrderPage({ params }: { params: Promise<{ number: 
               <p className="mt-2 text-sm text-muted">
                 Keep WhatsApp handy. We'll message you at {order.delivery_phone ?? order.whatsapp} to complete delivery.
               </p>
+              <div className="mt-5 border-t border-line pt-5">
+                <SetupVideos consoles={consoles} compact />
+              </div>
             </div>
           )}
 

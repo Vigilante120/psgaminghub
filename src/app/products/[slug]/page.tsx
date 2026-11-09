@@ -6,6 +6,7 @@ import { categoryLabel, fromPrice, inr, productConsoles } from "@/lib/store";
 import Cover from "@/components/Cover";
 import AddToCart from "@/components/AddToCart";
 import HowItWorks from "@/components/HowItWorks";
+import SetupVideos from "@/components/SetupVideos";
 import SlotInfo from "@/components/SlotInfo";
 import ProductRow from "@/components/ProductRow";
 import JsonLd from "@/components/JsonLd";
@@ -115,6 +116,9 @@ export default async function ProductPage({ params }: Props) {
         <section className="mt-12 sm:mt-16">
           <h2 className="mb-5 font-display text-2xl font-bold uppercase tracking-wide">How you get this game</h2>
           <HowItWorks />
+          <div className="mt-4">
+            <SetupVideos consoles={product.platforms} />
+          </div>
         </section>
       </div>
 

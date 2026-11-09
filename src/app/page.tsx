@@ -2,6 +2,7 @@ import Link from "next/link";
 import { getProducts } from "@/lib/products";
 import ProductRow from "@/components/ProductRow";
 import HowItWorks from "@/components/HowItWorks";
+import SetupVideos from "@/components/SetupVideos";
 import Cover from "@/components/Cover";
 import SlotInfo from "@/components/SlotInfo";
 
@@ -126,6 +127,9 @@ export default async function Home() {
         <p className="mt-2 max-w-2xl text-muted">Four simple steps from checkout to playing.</p>
         <div className="mt-6">
           <HowItWorks />
+        </div>
+        <div className="mt-4">
+          <SetupVideos />
         </div>
       </section>
 
