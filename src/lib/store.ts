@@ -209,3 +209,25 @@ export function upiLink(opts: { amount: number; orderNumber: string; note?: stri
   });
   return `upi://pay?${params.toString()}`;
 }
+
+// ---------- Reviews ---------------------------------------------------
+
+/** Public URL of a review screenshot (review-images is a public bucket). */
+export function reviewImageUrl(path: string) {
+  return `${process.env.NEXT_PUBLIC_SUPABASE_URL}/storage/v1/object/public/review-images/${path}`;
+}
+
+/** Average rating rounded to one decimal, plus how many reviews there are. */
+export function ratingSummary(ratings: number[]) {
+  const count = ratings.length;
+  const average = count ? Math.round((ratings.reduce((a, b) => a + b, 0) / count) * 10) / 10 : 0;
+  return { count, average };
+}
+
+/** "Rahul Sharma" → "Rahul S." — a friendly default for the name shown on a review. */
+export function reviewName(fullName: string | null | undefined) {
+  const parts = (fullName ?? "").trim().split(/\s+/).filter(Boolean);
+  if (parts.length === 0) return "";
+  const first = parts[0].slice(0, 30);
+  return parts.length > 1 ? `${first} ${parts[parts.length - 1][0].toUpperCase()}.` : first;
+}

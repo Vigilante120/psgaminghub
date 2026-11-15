@@ -5,8 +5,9 @@ import StatusBadge from "@/components/StatusBadge";
 import OrderTimeline from "@/components/OrderTimeline";
 import PaymentPanel from "./PaymentPanel";
 import SetupVideos from "@/components/SetupVideos";
-import { STATUS_META, deliveryLine, formatDate, inr, rentStatus, slotLabel, whatsappLink } from "@/lib/store";
-import type { Order } from "@/lib/types";
+import ReviewForm from "./ReviewForm";
+import { STATUS_META, deliveryLine, formatDate, inr, rentStatus, reviewName, slotLabel, whatsappLink } from "@/lib/store";
+import type { Order, Review } from "@/lib/types";
 import { NO_INDEX } from "@/lib/seo";
 
 export const metadata = { title: "Order details", robots: NO_INDEX };
@@ -33,6 +34,20 @@ export default async function OrderPage({ params }: { params: Promise<{ number: 
   const shots = order.payment_screenshot_paths?.length ?? (order.payment_screenshot_path ? 1 : 0);
   // Consoles in this order, so the setup guide opens on the right one.
   const consoles = [...new Set((order.order_items ?? []).map((i) => i.platform))];
+
+  // Delivered orders can rate each game once (one review per game per customer).
+  const reviewable = order.status === "delivered"
+    ? [...new Map((order.order_items ?? []).filter((i) => i.product_id).map((i) => [i.product_id!, i])).values()]
+    : [];
+  let myReviews: Review[] = [];
+  if (reviewable.length) {
+    const { data: rows } = await supabase
+      .from("reviews")
+      .select("*")
+      .eq("user_id", user.id)
+      .in("product_id", reviewable.map((i) => i.product_id!));
+    myReviews = (rows ?? []) as Review[];
+  }
 
   return (
     <div className="mx-auto max-w-5xl px-4 py-6 sm:py-10">
@@ -124,6 +139,25 @@ export default async function OrderPage({ params }: { params: Promise<{ number: 
               ) : (
                 <p className="mt-3 text-sm text-muted">Your receipt will appear here shortly.</p>
               )}
+            </div>
+          )}
+
+          {reviewable.length > 0 && (
+            <div id="review" className="scroll-mt-24 rounded-2xl border border-amber-400/30 bg-amber-400/5 p-4 sm:p-6">
+              <h2 className="font-display text-lg font-bold uppercase tracking-wide">Rate your game{reviewable.length > 1 ? "s" : ""} ⭐</h2>
+              <p className="mt-1 text-sm text-muted">Your rating and review help other gamers buy with confidence.</p>
+              <div className="mt-4 space-y-3">
+                {reviewable.map((i) => (
+                  <ReviewForm
+                    key={i.product_id}
+                    productId={i.product_id!}
+                    title={i.title}
+                    platform={i.platform}
+                    defaultName={reviewName(order.delivery_name ?? order.customer_name)}
+                    existing={myReviews.find((r) => r.product_id === i.product_id) ?? null}
+                  />
+                ))}
+              </div>
             </div>
           )}
 

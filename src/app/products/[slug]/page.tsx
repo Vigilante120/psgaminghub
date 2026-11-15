@@ -10,6 +10,9 @@ import SetupVideos from "@/components/SetupVideos";
 import SlotInfo from "@/components/SlotInfo";
 import ProductRow from "@/components/ProductRow";
 import JsonLd from "@/components/JsonLd";
+import Stars from "@/components/Stars";
+import ReviewCard from "@/components/ReviewCard";
+import { getProductReviews } from "@/lib/reviews";
 import { breadcrumbJsonLd, productDescription, productJsonLd } from "@/lib/seo";
 
 type Props = { params: Promise<{ slug: string }> };
@@ -35,7 +38,8 @@ export default async function ProductPage({ params }: Props) {
   const product = await getProductBySlug(slug);
   if (!product) notFound();
 
-  const related = (await getProducts({ category: product.category, limit: 11 })).filter((p) => p.id !== product.id).slice(0, 10);
+  const [relatedAll, ratings] = await Promise.all([getProducts({ category: product.category, limit: 11 }), getProductReviews(product.id)]);
+  const related = relatedAll.filter((p) => p.id !== product.id).slice(0, 10);
   const off =
     product.compare_at_price && product.compare_at_price > product.price
       ? Math.round(((product.compare_at_price - product.price) / product.compare_at_price) * 100)
@@ -45,7 +49,7 @@ export default async function ProductPage({ params }: Props) {
     <>
       <JsonLd
         data={[
-          productJsonLd(product),
+          productJsonLd(product, ratings),
           breadcrumbJsonLd([
             { name: "Home", path: "/" },
             { name: categoryLabel(product.category), path: `/collections/${product.category}` },
@@ -79,6 +83,13 @@ export default async function ProductPage({ params }: Props) {
             <h1 className="mt-4 break-words font-display text-3xl font-bold uppercase leading-tight tracking-wide sm:text-4xl lg:text-5xl">
               {product.title}
             </h1>
+            {ratings.count > 0 && (
+              <a href="#reviews" className="mt-3 inline-flex min-h-11 items-center gap-2 text-sm hover:underline lg:min-h-0">
+                <Stars value={ratings.average} />
+                <b>{ratings.average.toFixed(1)}</b>
+                <span className="text-muted">({ratings.count} review{ratings.count === 1 ? "" : "s"})</span>
+              </a>
+            )}
 
             <div className="mt-4 flex flex-wrap items-end gap-x-3 gap-y-1 sm:mt-5">
               {product.secondary_price != null && <span className="pb-1.5 text-sm text-muted">from</span>}
@@ -119,6 +130,42 @@ export default async function ProductPage({ params }: Props) {
           <div className="mt-4">
             <SetupVideos consoles={product.platforms} />
           </div>
+        </section>
+
+        <section id="reviews" className="mt-12 scroll-mt-24 sm:mt-16">
+          <h2 className="mb-5 font-display text-2xl font-bold uppercase tracking-wide">Customer reviews</h2>
+          {ratings.count === 0 ? (
+            <p className="rounded-2xl border border-line bg-panel px-4 py-8 text-center text-sm text-muted">
+              No reviews yet. Bought this game? Rate it from your order page once it's delivered.
+            </p>
+          ) : (
+            <div className="grid gap-6 lg:grid-cols-[280px_1fr]">
+              <div className="h-fit rounded-2xl border border-line bg-panel p-5">
+                <div className="flex items-end gap-2">
+                  <span className="font-display text-5xl font-bold">{ratings.average.toFixed(1)}</span>
+                  <span className="pb-1.5 text-muted">/ 5</span>
+                </div>
+                <Stars value={ratings.average} size={20} className="mt-2" />
+                <p className="mt-1 text-sm text-muted">Based on {ratings.count} verified review{ratings.count === 1 ? "" : "s"}</p>
+                <ul className="mt-4 space-y-1.5">
+                  {ratings.breakdown.map((b) => (
+                    <li key={b.stars} className="flex items-center gap-2 text-xs">
+                      <span className="w-8 shrink-0 text-muted">{b.stars} ★</span>
+                      <span className="h-2 flex-1 overflow-hidden rounded-full bg-white/10">
+                        <span className="block h-full rounded-full bg-amber-400" style={{ width: `${(b.count / ratings.count) * 100}%` }} />
+                      </span>
+                      <span className="w-6 shrink-0 text-right text-muted">{b.count}</span>
+                    </li>
+                  ))}
+                </ul>
+              </div>
+              <div className="grid gap-3 sm:grid-cols-2">
+                {ratings.reviews.map((r) => (
+                  <ReviewCard key={r.id} review={r} />
+                ))}
+              </div>
+            </div>
+          )}
         </section>
       </div>
 

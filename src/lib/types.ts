@@ -90,3 +90,24 @@ export type CartItem = {
   coverUrl: string | null;
   quantity: number;
 };
+
+export type ReviewStatus = "pending" | "approved" | "rejected";
+
+export type Review = {
+  id: string;
+  user_id: string;
+  product_id: string;
+  order_id: string | null;
+  platform: Platform | null;
+  /** Name the customer chose to show, e.g. "Rahul S." */
+  display_name: string;
+  rating: number;
+  body: string | null;
+  /** Paths in the public review-images bucket, always .webp. */
+  image_paths: string[];
+  status: ReviewStatus;
+  admin_note: string | null;
+  created_at: string;
+  updated_at: string;
+  approved_at: string | null;
+};

@@ -206,3 +206,34 @@ export async function cancelUnpaidOrders(ids: string[]): Promise<BulkResult> {
     return { ok: false, error: e instanceof Error ? e.message : "Could not cancel the orders." };
   }
 }
+
+// ---------- Reviews ---------------------------------------------------
+
+function refreshReviews() {
+  revalidatePath("/admin/reviews");
+  // Product pages and the home page show approved reviews.
+  revalidatePath("/", "layout");
+}
+
+export async function approveReview(formData: FormData) {
+  const supabase = await requireAdmin();
+  const id = String(formData.get("reviewId"));
+  const { error } = await supabase
+    .from("reviews")
+    .update({ status: "approved", approved_at: new Date().toISOString(), admin_note: null })
+    .eq("id", id);
+  if (error) throw new Error(error.message);
+  refreshReviews();
+}
+
+export async function rejectReview(formData: FormData) {
+  const supabase = await requireAdmin();
+  const id = String(formData.get("reviewId"));
+  const note = String(formData.get("note") ?? "").trim().slice(0, 300) || null;
+  const { error } = await supabase
+    .from("reviews")
+    .update({ status: "rejected", approved_at: null, admin_note: note })
+    .eq("id", id);
+  if (error) throw new Error(error.message);
+  refreshReviews();
+}

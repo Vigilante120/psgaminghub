@@ -23,7 +23,10 @@ export function productDescription(p: Product) {
 }
 
 /** schema.org Product: lets Google show the price and "In stock" under the result. */
-export function productJsonLd(p: Product) {
+export function productJsonLd(
+  p: Product,
+  ratings?: { average: number; count: number; reviews: { display_name: string; rating: number; body: string | null; approved_at: string | null; created_at: string }[] }
+) {
   const prices = [p.price, p.secondary_price, p.rent_price].filter((n): n is number => typeof n === "number" && n > 0);
   const url = `${SITE_URL}/products/${p.slug}`;
   return {
@@ -46,6 +49,19 @@ export function productJsonLd(p: Product) {
       url,
       seller: { "@type": "Organization", name: STORE_NAME },
     },
+    // Only approved customer reviews; Google shows the stars in search results.
+    ...(ratings && ratings.count > 0
+      ? {
+          aggregateRating: { "@type": "AggregateRating", ratingValue: ratings.average, reviewCount: ratings.count, bestRating: 5, worstRating: 1 },
+          review: ratings.reviews.slice(0, 10).map((r) => ({
+            "@type": "Review",
+            author: { "@type": "Person", name: r.display_name },
+            datePublished: (r.approved_at ?? r.created_at).slice(0, 10),
+            reviewRating: { "@type": "Rating", ratingValue: r.rating, bestRating: 5, worstRating: 1 },
+            ...(r.body ? { reviewBody: r.body } : {}),
+          })),
+        }
+      : {}),
   };
 }
 

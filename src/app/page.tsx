@@ -5,6 +5,8 @@ import HowItWorks from "@/components/HowItWorks";
 import SetupVideos from "@/components/SetupVideos";
 import Cover from "@/components/Cover";
 import SlotInfo from "@/components/SlotInfo";
+import ReviewCard from "@/components/ReviewCard";
+import { getLatestReviews } from "@/lib/reviews";
 
 export const metadata = { alternates: { canonical: "/" } };
 
@@ -42,10 +44,11 @@ const FAQ = [
 ];
 
 export default async function Home() {
-  const [featured, ps5Games, ps4Games] = await Promise.all([
+  const [featured, ps5Games, ps4Games, reviews] = await Promise.all([
     getProducts({ featured: true, limit: 3 }),
     getProducts({ category: "playstation-games", platform: "PS5", limit: 10 }),
     getProducts({ category: "playstation-games", platform: "PS4", limit: 10 }),
+    getLatestReviews(6),
   ]);
 
   return (
@@ -132,6 +135,19 @@ export default async function Home() {
           <SetupVideos />
         </div>
       </section>
+
+      {/* Customer reviews */}
+      {reviews.length > 0 && (
+        <section id="reviews" className="mx-auto mt-16 max-w-7xl scroll-mt-24 px-4 sm:mt-24">
+          <h2 className="font-display text-2xl font-bold uppercase tracking-wide md:text-3xl">What gamers say</h2>
+          <p className="mt-2 max-w-2xl text-muted">Real reviews from verified buyers.</p>
+          <div className="mt-6 grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
+            {reviews.map((r) => (
+              <ReviewCard key={r.id} review={r} product={r.products} />
+            ))}
+          </div>
+        </section>
+      )}
 
       {/* FAQ */}
       <section id="faq" className="mx-auto mt-16 max-w-3xl sm:mt-24 scroll-mt-24 px-4">
