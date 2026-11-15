@@ -12,6 +12,7 @@ import JsonLd from "@/components/JsonLd";
 import { SITE_JSON_LD, SITE_URL } from "@/lib/seo";
 import { STORE_NAME } from "@/lib/store";
 import { AdminProvider } from "@/components/AdminEdit";
+import GtaCountdown from "@/components/GtaCountdown";
 
 const chakra = Chakra_Petch({
   subsets: ["latin"],
@@ -73,6 +74,7 @@ export default async function RootLayout({ children }: { children: React.ReactNo
           <Footer />
           <CartDrawer />
           <WhatsAppButton />
+          <GtaCountdown />
         </CartProvider>
       </body>
     </html>
