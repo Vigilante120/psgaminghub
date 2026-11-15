@@ -3,6 +3,7 @@ import type { Product } from "@/lib/types";
 import { LOW_STOCK, fromPrice, inr, productConsoles, soldOut } from "@/lib/store";
 import Cover from "./Cover";
 import QuickAdd from "./QuickAdd";
+import { AdminEditButton } from "./AdminEdit";
 
 export default function ProductCard({ product }: { product: Product }) {
   const off =
@@ -58,6 +59,7 @@ export default function ProductCard({ product }: { product: Product }) {
           </div>
           <QuickAdd product={product} />
         </div>
+        <AdminEditButton productId={product.id} />
       </div>
     </div>
   );

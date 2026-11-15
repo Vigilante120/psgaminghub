@@ -10,6 +10,7 @@ import SetupVideos from "@/components/SetupVideos";
 import SlotInfo from "@/components/SlotInfo";
 import ProductRow from "@/components/ProductRow";
 import JsonLd from "@/components/JsonLd";
+import { AdminEditButton } from "@/components/AdminEdit";
 import Stars from "@/components/Stars";
 import ReviewCard from "@/components/ReviewCard";
 import { getProductReviews } from "@/lib/reviews";
@@ -79,6 +80,9 @@ export default async function ProductPage({ params }: Props) {
                 </span>
               ))}
               {off > 0 && <span className="rounded-md bg-hot px-2 py-1 text-xs font-bold">SAVE {off}%</span>}
+              <span className="ml-auto">
+                <AdminEditButton productId={product.id} variant="page" />
+              </span>
             </div>
             <h1 className="mt-4 break-words font-display text-3xl font-bold uppercase leading-tight tracking-wide sm:text-4xl lg:text-5xl">
               {product.title}

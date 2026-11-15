@@ -11,6 +11,7 @@ import { getSessionInfo } from "@/lib/supabase/server";
 import JsonLd from "@/components/JsonLd";
 import { SITE_JSON_LD, SITE_URL } from "@/lib/seo";
 import { STORE_NAME } from "@/lib/store";
+import { AdminProvider } from "@/components/AdminEdit";
 
 const chakra = Chakra_Petch({
   subsets: ["latin"],
@@ -66,7 +67,9 @@ export default async function RootLayout({ children }: { children: React.ReactNo
         <CartProvider>
           <AnnouncementBar />
           <Header signedIn={Boolean(user)} isAdmin={isAdmin} />
-          <main className="min-h-[60vh]">{children}</main>
+          <main className="min-h-[60vh]">
+            <AdminProvider isAdmin={isAdmin}>{children}</AdminProvider>
+          </main>
           <Footer />
           <CartDrawer />
           <WhatsAppButton />

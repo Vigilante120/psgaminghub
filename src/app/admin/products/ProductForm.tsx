@@ -7,7 +7,7 @@ import { CATEGORIES, CONSOLES, categoryLabel } from "@/lib/store";
 import Spinner from "@/components/Spinner";
 import { deleteProduct, saveProduct } from "../actions";
 
-export default function ProductForm({ product }: { product?: Product }) {
+export default function ProductForm({ product, backTo }: { product?: Product; backTo?: string }) {
   const p = product;
   const router = useRouter();
   // busy: saving. done: saved, showing the green button before going back to the list.
@@ -40,7 +40,7 @@ export default function ProductForm({ product }: { product?: Product }) {
     // Stays locked: the green button shows briefly, then back to the product list.
     setStatus("done");
     setTimeout(() => {
-      router.push("/admin/products");
+      router.push(backTo ?? "/admin/products");
       router.refresh();
     }, 900);
   }
