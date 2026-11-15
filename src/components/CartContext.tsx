@@ -1,6 +1,7 @@
 "use client";
 
-import { createContext, useCallback, useContext, useEffect, useMemo, useState } from "react";
+import { createContext, useCallback, useContext, useEffect, useMemo, useRef, useState } from "react";
+import { createClient } from "@/lib/supabase/client";
 import type { CartItem } from "@/lib/types";
 import { MAX_QTY, cartDiscount } from "@/lib/store";
 
@@ -51,6 +52,53 @@ export function CartProvider({ children }: { children: React.ReactNode }) {
       /* storage unavailable */
     }
   }, [items, loaded]);
+
+  // Signed-in customers: keep a copy of the cart on the server. It powers the
+  // "your cart is waiting" email and brings the cart back on another device.
+  const [userId, setUserId] = useState<string | null>(null);
+  const [synced, setSynced] = useState(false);
+  const itemsRef = useRef(items);
+  itemsRef.current = items;
+
+  useEffect(() => {
+    const supabase = createClient();
+    supabase.auth.getSession().then(({ data }) => setUserId(data.session?.user.id ?? null));
+    const { data: sub } = supabase.auth.onAuthStateChange((_e, session) => setUserId(session?.user.id ?? null));
+    return () => sub.subscription.unsubscribe();
+  }, []);
+
+  // On sign-in (or page load while signed in): an empty cart here picks up the saved one.
+  useEffect(() => {
+    if (!loaded) return;
+    setSynced(false);
+    if (!userId) return;
+    let cancelled = false;
+    createClient()
+      .from("carts")
+      .select("items, updated_at")
+      .maybeSingle()
+      .then(({ data }) => {
+        if (cancelled) return;
+        const saved = Array.isArray(data?.items) ? (data.items as CartItem[]) : [];
+        const fresh = data && Date.now() - new Date(data.updated_at).getTime() < 7 * 24 * 3600 * 1000;
+        if (itemsRef.current.length === 0 && saved.length && fresh) setItems(saved);
+        setSynced(true);
+      });
+    return () => {
+      cancelled = true;
+    };
+  }, [userId, loaded]);
+
+  // Save changes (debounced). The server only moves the "last changed" time when the contents differ.
+  useEffect(() => {
+    if (!userId || !synced) return;
+    const t = setTimeout(() => {
+      createClient().rpc("save_cart", { p_items: items }).then(({ error }) => {
+        if (error) console.warn("save_cart", error.message);
+      });
+    }, 1000);
+    return () => clearTimeout(t);
+  }, [items, userId, synced]);
 
   // A product + platform + slot is a single line; buying several copies raises its quantity.
   const add = useCallback((item: Omit<CartItem, "quantity">, quantity = 1) => {
