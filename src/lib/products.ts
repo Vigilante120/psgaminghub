@@ -23,6 +23,32 @@ function normalize(rows: Record<string, unknown>[] | null): Product[] {
   }));
 }
 
+// Nicknames people type, mapped to how the titles are written. Order matters:
+// "gtavi" must become VI before the GTA V rule sees it.
+const SEARCH_ALIASES: [RegExp, string][] = [
+  [/\bgta\s*-?\s*(vi|6)\b/g, "grand theft auto vi"],
+  [/\bgrand theft auto\s*6\b/g, "grand theft auto vi"],
+  [/\bgta\s*-?\s*(v|5)\b/g, "grand theft auto v"],
+  [/\bgrand theft auto\s*5\b/g, "grand theft auto v"],
+  [/\bgta\b/g, "grand theft auto"],
+];
+
+/**
+ * Turns "gta6", "GTA VI", "gta 5"… into the title wording. `exact` is set when an alias
+ * was used or the search ends in a numeral: then the last word must end there, so
+ * "grand theft auto v" doesn't also match "Grand Theft Auto VI".
+ */
+export function expandSearch(raw: string): { term: string; exact: RegExp | null } {
+  const lower = raw.trim().toLowerCase().replace(/\s+/g, " ");
+  let term = lower;
+  for (const [re, to] of SEARCH_ALIASES) term = term.replace(re, to);
+  // Also exact when the search ends in a numeral ("grand theft auto v", "fc 25"), so V doesn't match VI.
+  const endsInNumeral = /(^|\s)([ivx]+|\d+)$/.test(term);
+  if (term === lower && !endsInNumeral) return { term: raw.trim(), exact: null };
+  const escaped = term.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+  return { term, exact: new RegExp(`${escaped}(?![a-z0-9])`, "i") };
+}
+
 export async function getProducts(q: ProductQuery = {}): Promise<Product[]> {
   const supabase = await createClient();
   let query = supabase.from("products").select("*").eq("is_active", true);
@@ -30,7 +56,8 @@ export async function getProducts(q: ProductQuery = {}): Promise<Product[]> {
   if (q.category && q.category !== "all") query = query.eq("category", q.category);
   if (q.platform) query = query.contains("platforms", [q.platform]);
   if (q.featured) query = query.eq("is_featured", true);
-  if (q.search) query = query.ilike("title", `%${q.search.replace(/[%_]/g, "")}%`);
+  const search = q.search ? expandSearch(q.search) : null;
+  if (search) query = query.ilike("title", `%${search.term.replace(/[%_]/g, "")}%`);
   if (q.sale) query = query.not("compare_at_price", "is", null);
 
   switch (q.sort) {
@@ -62,6 +89,7 @@ export async function getProducts(q: ProductQuery = {}): Promise<Product[]> {
   }
   let products = normalize(data);
   if (q.sale) products = products.filter((p) => p.compare_at_price && p.compare_at_price > p.price);
+  if (search?.exact) products = products.filter((p) => search.exact!.test(p.title));
   return products;
 }
 
