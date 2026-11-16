@@ -4,7 +4,7 @@ import { createHmac, timingSafeEqual } from "crypto";
 // so nobody can unsubscribe someone else by guessing their user id.
 
 function sign(userId: string) {
-  const secret = process.env.CRON_SECRET;
+  const secret = process.env.CRON_SECRET?.trim();
   if (!secret) return null;
   return createHmac("sha256", secret).update(`cart-reminders:${userId}`).digest("hex").slice(0, 32);
 }

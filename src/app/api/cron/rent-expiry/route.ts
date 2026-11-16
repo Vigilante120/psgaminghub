@@ -25,8 +25,10 @@ type DueItem = {
  * Each item is claimed (rent_notified_at) before sending, so nobody gets the email twice.
  */
 export async function GET(request: Request) {
-  const secret = process.env.CRON_SECRET;
-  if (!secret || request.headers.get("authorization") !== `Bearer ${secret}`) {
+  // Trim: a secret pasted into Vercel or the SQL editor can pick up a stray line break or space.
+  const secret = process.env.CRON_SECRET?.trim();
+  const given = request.headers.get("authorization")?.replace(/^Bearer\s+/i, "").trim();
+  if (!secret || given !== secret) {
     return NextResponse.json({ error: "unauthorised" }, { status: 401 });
   }
 

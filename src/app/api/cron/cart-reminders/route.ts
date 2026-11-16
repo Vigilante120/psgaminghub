@@ -22,8 +22,10 @@ type CartRow = { user_id: string; items: CartItem[]; updated_at: string; reminde
 type Line = CartItem & { left: number | null; cover: string | null; slug: string };
 
 export async function GET(request: Request) {
-  const secret = process.env.CRON_SECRET;
-  if (!secret || request.headers.get("authorization") !== `Bearer ${secret}`) {
+  // Trim: a secret pasted into Vercel or the SQL editor can pick up a stray line break or space.
+  const secret = process.env.CRON_SECRET?.trim();
+  const given = request.headers.get("authorization")?.replace(/^Bearer\s+/i, "").trim();
+  if (!secret || given !== secret) {
     return NextResponse.json({ error: "unauthorised" }, { status: 401 });
   }
   const apiKey = process.env.RESEND_API_KEY;
